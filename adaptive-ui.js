@@ -2,7 +2,6 @@
   const frame = document.getElementById('feed-frame');
   let attachedDoc = null;
   let observers = [];
-  let previousState = null;
   let breakoutTimer = null;
 
   const TOPIC_COLORS = {
@@ -105,15 +104,21 @@
   }
 
   function setTopicVars(d, dominant) {
-    const fallback = ['#00f0ff', '0,240,255'];
-    const pair = TOPIC_COLORS[dominant.name] || fallback;
-    d.documentElement.style.setProperty('--adaptive-topic', pair[0]);
-    d.documentElement.style.setProperty('--adaptive-topic-rgb', pair[1]);
-    d.querySelectorAll('#topic-weights-container .topic-weight-row').forEach(row => row.classList.remove('adaptive-dominant-topic'));
-    if (dominant.row) dominant.row.classList.add('adaptive-dominant-topic');
+    const pair = TOPIC_COLORS[dominant.name] || TOPIC_COLORS.Technology;
+    const root = d.documentElement;
+    if (root.style.getPropertyValue('--adaptive-topic') !== pair[0]) root.style.setProperty('--adaptive-topic', pair[0]);
+    if (root.style.getPropertyValue('--adaptive-topic-rgb') !== pair[1]) root.style.setProperty('--adaptive-topic-rgb', pair[1]);
+
+    d.querySelectorAll('#topic-weights-container .topic-weight-row').forEach(row => {
+      const shouldBeDominant = row === dominant.row;
+      if (row.classList.contains('adaptive-dominant-topic') !== shouldBeDominant) {
+        row.classList.toggle('adaptive-dominant-topic', shouldBeDominant);
+      }
+    });
 
     const text = d.getElementById('adaptive-dominant-text');
-    if (text) text.textContent = dominant.name + (dominant.pct ? ` · ${dominant.pct}%` : '');
+    const nextText = dominant.name + (dominant.pct ? ` · ${dominant.pct}%` : '');
+    if (text && text.textContent !== nextText) text.textContent = nextText;
   }
 
   function showTransition(d, nextState) {
@@ -124,6 +129,7 @@
       breakout: ['Bubble Disrupted', 'Diversity has been deliberately restored.']
     };
     const copy = map[nextState] || map.exploration;
+    d.querySelectorAll('.adaptive-transition-banner').forEach(el => el.remove());
     const banner = d.createElement('div');
     banner.className = 'adaptive-transition-banner';
     banner.innerHTML = `<b>${copy[0]}</b><span>${copy[1]}</span>`;
@@ -133,25 +139,26 @@
 
   function applyState(d, stateName, announce = true) {
     if (!d?.documentElement) return;
-    const old = d.documentElement.dataset.algoState;
-    d.documentElement.dataset.algoState = stateName;
+    const root = d.documentElement;
+    const old = root.dataset.algoState;
+    if (old !== stateName) root.dataset.algoState = stateName;
+
     const chip = ensureStateChip(d);
     const text = d.getElementById('adaptive-state-text');
     const labels = { exploration: 'Exploration', learning: 'Pattern Learning', echo: 'Echo Chamber', breakout: 'Bubble Breakout' };
-    if (text) text.textContent = labels[stateName] || stateName;
+    const label = labels[stateName] || stateName;
+    if (text && text.textContent !== label) text.textContent = label;
+
     const dashboardActive = d.getElementById('screen-dashboard')?.classList.contains('active');
     chip.classList.toggle('visible', !!dashboardActive);
-
     if (announce && old && old !== stateName && stateName !== 'breakout') showTransition(d, stateName);
-    previousState = stateName;
   }
 
   function sync(d, announce = true) {
     if (!d?.documentElement) return;
     ensureStateChip(d);
     ensureDominantStrip(d);
-    const dominant = readDominantTopic(d);
-    setTopicVars(d, dominant);
+    setTopicVars(d, readDominantTopic(d));
     if (d.documentElement.dataset.algoState === 'breakout') return;
     applyState(d, readStage(d), announce);
   }
@@ -175,8 +182,8 @@
       btn.dataset.adaptiveBound = '1';
       btn.addEventListener('click', () => {
         setLastAction(d, action);
-        setTimeout(() => sync(d, true), 50);
-        setTimeout(() => sync(d, false), 320);
+        setTimeout(() => sync(d, true), 70);
+        setTimeout(() => sync(d, false), 340);
       }, true);
     });
 
@@ -205,9 +212,16 @@
       else if (key === 's') setLastAction(d, 'share');
       else if (key === 'k') setLastAction(d, 'skip');
       else return;
-      setTimeout(() => sync(d, true), 70);
-      setTimeout(() => sync(d, false), 340);
+      setTimeout(() => sync(d, true), 85);
+      setTimeout(() => sync(d, false), 350);
     }, true);
+  }
+
+  function watch(target, options, d, announce = true) {
+    if (!target) return;
+    const observer = new MutationObserver(() => sync(d, announce));
+    observer.observe(target, options);
+    observers.push(observer);
   }
 
   function attach() {
@@ -226,29 +240,20 @@
     wireKeyboard(d, w);
     sync(d, false);
 
-    const targets = [
-      d.getElementById('interaction-step-counter'),
-      d.getElementById('metric-risk-badge'),
-      d.getElementById('topic-weights-container'),
-      d.getElementById('screen-dashboard'),
-      d.getElementById('screen-reveal')
-    ].filter(Boolean);
+    watch(d.getElementById('interaction-step-counter'), { childList: true, subtree: true, characterData: true }, d, true);
+    watch(d.getElementById('metric-risk-badge'), { childList: true, subtree: true, attributes: true, characterData: true }, d, true);
+    watch(d.getElementById('topic-weights-container'), { childList: true, subtree: true, characterData: true }, d, false);
+    watch(d.getElementById('screen-dashboard'), { attributes: true, attributeFilter: ['class'] }, d, false);
+    watch(d.getElementById('screen-reveal'), { attributes: true, attributeFilter: ['class'] }, d, false);
 
-    targets.forEach(target => {
-      const observer = new MutationObserver(() => sync(d, true));
-      observer.observe(target, { childList: true, subtree: true, attributes: true, characterData: true });
-      observers.push(observer);
-    });
-
-    // The weight list is rebuilt after every interaction, so reapply the dominant marker shortly after mutations.
     const periodic = setInterval(() => {
       if (safeDoc() !== d) { clearInterval(periodic); return; }
       sync(d, false);
-    }, 900);
+    }, 1200);
     observers.push({ disconnect: () => clearInterval(periodic) });
   }
 
   if (!frame) return;
-  frame.addEventListener('load', () => setTimeout(attach, 60));
-  if (frame.contentDocument?.readyState === 'complete') setTimeout(attach, 60);
+  frame.addEventListener('load', () => setTimeout(attach, 80));
+  if (frame.contentDocument?.readyState === 'complete') setTimeout(attach, 80);
 })();
