@@ -7,29 +7,29 @@
   <meta name="description" content="Visualizing the Invisible: An interactive real-time simulation of recommendation algorithms, neural reinforcement loops, and filter bubble formation.">
   <style>
     /* ==========================================================================
-       INSIDE THE FEED — DESIGN SYSTEM & CYBERNETIC PALETTE
+       INSIDE THE FEED — MODERN CYBERNETIC DESIGN SYSTEM
        ========================================================================== */
     :root {
       --bg-dark: #060913;
       --bg-surface: #0c1222;
       --bg-surface-elevated: #131d38;
-      --bg-glass: rgba(12, 18, 34, 0.78);
-      --bg-glass-card: rgba(19, 29, 56, 0.75);
+      --bg-glass: rgba(12, 18, 34, 0.82);
+      --bg-glass-card: rgba(19, 29, 56, 0.78);
       --border-glass: rgba(255, 255, 255, 0.1);
       --border-glass-bright: rgba(0, 240, 255, 0.35);
 
       --color-tech: #00f0ff;
-      --color-tech-glow: rgba(0, 240, 255, 0.4);
+      --color-tech-glow: rgba(0, 240, 255, 0.45);
       --color-env: #10b981;
-      --color-env-glow: rgba(16, 185, 129, 0.4);
+      --color-env-glow: rgba(16, 185, 129, 0.45);
       --color-fit: #f97316;
-      --color-fit-glow: rgba(249, 115, 22, 0.4);
+      --color-fit-glow: rgba(249, 115, 22, 0.45);
       --color-travel: #8b5cf6;
-      --color-travel-glow: rgba(139, 92, 246, 0.4);
+      --color-travel-glow: rgba(139, 92, 246, 0.45);
       --color-ent: #ec4899;
-      --color-ent-glow: rgba(236, 72, 153, 0.4);
+      --color-ent-glow: rgba(236, 72, 153, 0.45);
       --color-fin: #eab308;
-      --color-fin-glow: rgba(234, 179, 8, 0.4);
+      --color-fin-glow: rgba(234, 179, 8, 0.45);
 
       --color-like: #f43f5e;
       --color-share: #3b82f6;
@@ -118,7 +118,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.85rem 1.75rem;
-      background: rgba(6, 9, 19, 0.85);
+      background: rgba(6, 9, 19, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-glass);
@@ -218,7 +218,7 @@
     main.app-container {
       position: relative;
       z-index: 10;
-      max-width: 1540px;
+      max-width: 1560px;
       margin: 0 auto;
       padding: 1.5rem 1.25rem 3rem 1.25rem;
       min-height: calc(100vh - 65px);
@@ -515,7 +515,7 @@
        ========================================================================== */
     .dashboard-layout {
       display: grid;
-      grid-template-columns: 340px 1fr 340px;
+      grid-template-columns: 360px 1fr 340px;
       gap: 1.5rem;
       align-items: start;
       margin-top: 0.5rem;
@@ -550,7 +550,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.15rem;
+      margin-bottom: 1rem;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -575,16 +575,77 @@
       color: var(--text-primary);
     }
 
-    /* LEFT: Algorithm Mind Panel */
+    /* ==========================================================================
+       LEFT: SUPER-INTERACTIVE ALGORITHM MIND WITH TABS & LAB
+       ========================================================================== */
+    .algo-tabs-nav {
+      display: flex;
+      gap: 0.35rem;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.3rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .algo-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.45rem 0.25rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: var(--transition-smooth);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .algo-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .algo-tab-btn.active {
+      background: var(--color-tech);
+      color: #060913;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .algo-tab-content {
+      display: none;
+    }
+
+    .algo-tab-content.active {
+      display: block;
+      animation: fadeInTab 0.3s ease;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .algo-viz-box {
       position: relative;
       width: 100%;
-      height: 260px;
-      background: rgba(6, 9, 19, 0.7);
+      height: 270px;
+      background: rgba(6, 9, 19, 0.75);
       border-radius: var(--radius-md);
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.06);
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
+      cursor: grab;
+    }
+
+    .algo-viz-box:active {
+      cursor: grabbing;
     }
 
     #neural-canvas {
@@ -593,31 +654,191 @@
       display: block;
     }
 
+    .canvas-hint-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-bottom: 0.85rem;
+      padding: 0 0.25rem;
+    }
+
+    /* Embedded Topic Inspector Card in Algorithm Mind */
+    .node-inspector-card {
+      background: rgba(19, 29, 56, 0.95);
+      border: 1px solid var(--border-glass-bright);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: var(--transition-smooth);
+    }
+
+    .inspector-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .inspector-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inspector-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .mini-action-btn {
+      flex: 1;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: var(--transition-smooth);
+    }
+
+    .mini-action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .mini-action-btn.btn-boost:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #34d399;
+    }
+
+    .mini-action-btn.btn-suppress:hover {
+      background: rgba(244, 63, 94, 0.25);
+      border-color: #f43f5e;
+      color: #ff6b8b;
+    }
+
+    .mini-action-btn.btn-force:hover {
+      background: rgba(0, 240, 255, 0.25);
+      border-color: #00f0ff;
+      color: #00f0ff;
+    }
+
+    /* Manual Override Lab Tab */
+    .lab-sliders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .lab-slider-row {
+      background: rgba(6, 9, 19, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+    }
+
+    .lab-slider-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .custom-range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 99px;
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .custom-range-slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--slider-color, #00f0ff);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--slider-color, #00f0ff);
+      transition: transform 0.15s ease;
+    }
+
+    .custom-range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    .lab-presets-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .preset-chip-btn {
+      padding: 0.5rem 0.6rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-align: center;
+    }
+
+    .preset-chip-btn:hover {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--color-tech);
+      color: #fff;
+    }
+
+    /* Narrative Stream Box */
     .narrative-stream-box {
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(0, 240, 255, 0.25);
       border-left: 4px solid var(--color-tech);
       border-radius: var(--radius-sm);
-      padding: 0.9rem;
+      padding: 0.85rem;
       margin-bottom: 1rem;
-      min-height: 80px;
+      min-height: 75px;
     }
 
     .narrative-label {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-family: var(--font-mono);
       font-weight: 700;
       color: var(--color-tech);
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.3rem;
       display: flex;
       align-items: center;
       gap: 0.4rem;
     }
 
     .narrative-text {
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       color: #e2e8f0;
       line-height: 1.45;
       transition: opacity 0.2s ease;
@@ -626,7 +847,7 @@
     .topic-weights-list {
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.65rem;
     }
 
     .topic-weight-row {
@@ -634,6 +855,14 @@
       flex-direction: column;
       gap: 0.25rem;
       font-size: 0.82rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-smooth);
+    }
+
+    .topic-weight-row:hover {
+      background: rgba(255, 255, 255, 0.04);
     }
 
     .topic-weight-meta {
@@ -681,7 +910,9 @@
       box-shadow: 0 0 10px var(--topic-color, var(--color-tech));
     }
 
-    /* CENTER: Main Feed Stream */
+    /* ==========================================================================
+       CENTER: MAIN FEED STREAM
+       ========================================================================== */
     .panel-feed-col {
       display: flex;
       flex-direction: column;
@@ -728,7 +959,6 @@
       justify-content: center;
     }
 
-    /* Interactive Post Card */
     .post-card {
       width: 100%;
       background: var(--bg-surface);
@@ -835,7 +1065,6 @@
       display: block;
     }
 
-    /* Action Bar */
     .post-action-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -889,7 +1118,6 @@
       transform: translateY(-2px);
     }
 
-    /* Flying Action Data Packet */
     .flying-packet {
       position: fixed;
       pointer-events: none;
@@ -901,7 +1129,9 @@
       transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
     }
 
-    /* RIGHT: Real-time Telemetry & Live Meters */
+    /* ==========================================================================
+       RIGHT: LIVE METRICS & TELEMETRY
+       ========================================================================== */
     .metrics-stack {
       display: flex;
       flex-direction: column;
@@ -937,7 +1167,6 @@
       color: var(--text-primary);
     }
 
-    /* Risk Status Badge */
     .risk-badge {
       display: inline-flex;
       align-items: center;
@@ -996,7 +1225,6 @@
       transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
     }
 
-    /* Stacked Diversity Spectrum Bar */
     .diversity-spectrum {
       display: flex;
       height: 11px;
@@ -1336,7 +1564,7 @@
           </div>
           <div class="feature-pill">
             <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.57 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
-            <span>Algorithm Mind Neural Map</span>
+            <span>Interactive Neural Sandbox</span>
           </div>
           <div class="feature-pill">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5v-9l6 4.5-6 4.5z"/></svg>
@@ -1393,7 +1621,7 @@
           <div class="topic-card" data-topic="travel" style="--topic-accent: var(--color-travel); --topic-glow: var(--color-travel-glow);" tabindex="0" role="checkbox" aria-checked="false">
             <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
             <div class="topic-icon-wrap">
-              <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
             </div>
             <h3 class="topic-card-title">Travel</h3>
             <p class="topic-card-desc">Remote alpine explorations, ancient architectural wonders, and global frontiers.</p>
@@ -1440,7 +1668,7 @@
     <section id="screen-dashboard" class="screen-view" aria-label="Interactive Feed Simulation Dashboard">
       <div class="dashboard-layout">
         
-        <!-- LEFT COLUMN: ALGORITHM MIND -->
+        <!-- LEFT COLUMN: SUPER-INTERACTIVE ALGORITHM MIND -->
         <aside class="glass-panel panel-left-col" aria-label="Algorithm Visualization Panel">
           <div class="panel-header">
             <div class="panel-title-group">
@@ -1450,9 +1678,69 @@
             <span class="topic-dot" style="background: var(--color-tech); box-shadow: 0 0 10px var(--color-tech);"></span>
           </div>
 
-          <!-- Neural Topology Canvas -->
-          <div class="algo-viz-box" id="neural-container">
-            <canvas id="neural-canvas"></canvas>
+          <!-- Interactive Tab Nav -->
+          <div class="algo-tabs-nav" role="tablist">
+            <button class="algo-tab-btn active" data-tab="tab-neural-graph" role="tab" aria-selected="true">
+              <span>🌐 Neural Map</span>
+            </button>
+            <button class="algo-tab-btn" data-tab="tab-neural-lab" role="tab" aria-selected="false">
+              <span>🎛️ Manual Lab</span>
+            </button>
+          </div>
+
+          <!-- TAB 1: Neural Graph Canvas & Physics Orbitals -->
+          <div id="tab-neural-graph" class="algo-tab-content active" role="tabpanel">
+            <div class="algo-viz-box" id="neural-container" title="Click or drag nodes to inspect and manipulate neural weights">
+              <canvas id="neural-canvas"></canvas>
+            </div>
+            <div class="canvas-hint-bar">
+              <span>💡 Drag / Click bubbles to inspect</span>
+              <span id="canvas-hover-state">Interactive Node: None</span>
+            </div>
+
+            <!-- Active Selected Node Quick-Action Box -->
+            <div class="node-inspector-card" id="node-inspector" style="display: none;">
+              <div class="inspector-head">
+                <span class="inspector-title" id="insp-title">
+                  <span class="topic-dot" id="insp-dot"></span>
+                  <span id="insp-name">Technology</span>
+                </span>
+                <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-tech); font-weight: 700;" id="insp-prob">42% Prob</span>
+              </div>
+              <div style="font-size: 0.76rem; color: var(--text-secondary);" id="insp-desc">
+                Current weight: 14.0 pts • Interaction affinity: High
+              </div>
+              <div class="inspector-actions">
+                <button class="mini-action-btn btn-boost" id="insp-btn-boost" title="Inject weight to this topic">
+                  <span>+ Boost (+2)</span>
+                </button>
+                <button class="mini-action-btn btn-suppress" id="insp-btn-suppress" title="Dampen weight for this topic">
+                  <span>- Suppress (-2)</span>
+                </button>
+                <button class="mini-action-btn btn-force" id="insp-btn-force" title="Force next post from this topic">
+                  <span>🎯 Show Now</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Manual Lab Override Sliders & Presets -->
+          <div id="tab-neural-lab" class="algo-tab-content" role="tabpanel">
+            <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              Manually slide neural weights to see live algorithm response:
+            </div>
+            
+            <!-- Quick Preset Buttons -->
+            <div class="lab-presets-group">
+              <button class="preset-chip-btn" id="preset-tech-bubble">⚡ Echo Chamber (Tech)</button>
+              <button class="preset-chip-btn" id="preset-balance">⚖️ Harmonic Balance</button>
+              <button class="preset-chip-btn" id="preset-random">🎲 Random Wave</button>
+              <button class="preset-chip-btn" id="preset-reset-init">🔄 Initial State</button>
+            </div>
+
+            <div class="lab-sliders-list" id="lab-sliders-container">
+              <!-- Rendered via JS -->
+            </div>
           </div>
 
           <!-- Real-Time Thought Stream -->
@@ -1501,7 +1789,7 @@
               </div>
 
               <p class="post-text-content" id="card-text-content">
-                Just achieved quantum coherence exceeding 100 microseconds on our room-temperature photonic lattice. The future of synthetic intelligence compute is accelerating faster than predicted.
+                Just achieved quantum coherence exceeding 100 microseconds on our room-temperature photonic lattice. The speedup for synthetic intelligence compute models will render classical hardware obsolete within 4 years.
               </p>
 
               <!-- Dynamic Graphic Vector Canvas / SVG -->
@@ -1705,7 +1993,7 @@
        ========================================================================== -->
   <script>
     /**
-     * INSIDE THE FEED — CORE SIMULATION ENGINE
+     * INSIDE THE FEED — CORE SIMULATION & INTERACTIVE NEURAL ENGINE
      */
 
     // --- Audio Synthesis via Web Audio API ---
@@ -1752,10 +2040,15 @@
         }
       }
 
+      playHover() {
+        if (!this.enabled) return;
+        this.playTone(600, 'sine', 0.05, 0.04);
+      }
+
       playLike() {
         if (!this.enabled) return;
-        this.playTone(523.25, 'sine', 0.18, 0.2); // C5
-        setTimeout(() => this.playTone(659.25, 'sine', 0.25, 0.25), 60); // E5
+        this.playTone(523.25, 'sine', 0.18, 0.2);
+        setTimeout(() => this.playTone(659.25, 'sine', 0.25, 0.25), 60);
       }
 
       playShare() {
@@ -1805,47 +2098,47 @@
         id: 'tech',
         name: 'Technology',
         color: '#00f0ff',
-        glow: 'rgba(0, 240, 255, 0.4)',
+        glow: 'rgba(0, 240, 255, 0.45)',
         icon: '<path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>'
       },
       env: {
         id: 'env',
         name: 'Environment',
         color: '#10b981',
-        glow: 'rgba(16, 185, 129, 0.4)',
+        glow: 'rgba(16, 185, 129, 0.45)',
         icon: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/>'
       },
       fit: {
         id: 'fit',
         name: 'Fitness',
         color: '#f97316',
-        glow: 'rgba(249, 115, 22, 0.4)',
+        glow: 'rgba(249, 115, 22, 0.45)',
         icon: '<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29l-1.43-1.43z"/>'
       },
       travel: {
         id: 'travel',
         name: 'Travel',
         color: '#8b5cf6',
-        glow: 'rgba(139, 92, 246, 0.4)',
+        glow: 'rgba(139, 92, 246, 0.45)',
         icon: '<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>'
       },
       ent: {
         id: 'ent',
         name: 'Entertainment',
         color: '#ec4899',
-        glow: 'rgba(236, 72, 153, 0.4)',
+        glow: 'rgba(236, 72, 153, 0.45)',
         icon: '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>'
       },
       fin: {
         id: 'fin',
         name: 'Finance',
         color: '#eab308',
-        glow: 'rgba(234, 179, 8, 0.4)',
+        glow: 'rgba(234, 179, 8, 0.45)',
         icon: '<path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>'
       }
     };
 
-    // --- Rich Fictional Post Database (24 Handcrafted Posts with Inline SVG Illustrations) ---
+    // --- Rich Fictional Post Database ---
     const POSTS_DATABASE = [
       // Technology Posts
       {
@@ -2254,13 +2547,14 @@
       },
       currentPost: null,
       recentPostIds: [],
-      stage: 1
+      stage: 1,
+      selectedInspectorTopic: 'tech'
     };
 
     // --- Mathematical Recommendation Engine ---
     class RecommendationEngine {
       static calculateProbabilities(weights) {
-        const gamma = 1.35; // Amplification factor modeling nonlinear softmax ranking
+        const gamma = 1.35;
         const amplified = {};
         let sum = 0;
 
@@ -2316,16 +2610,20 @@
         };
       }
 
-      static selectNextPost(probs, recentIds) {
-        const rand = Math.random();
-        let cumulative = 0;
-        let chosenTopic = 'tech';
+      static selectNextPost(probs, recentIds, forceTopic = null) {
+        let chosenTopic = forceTopic;
 
-        for (const topic in probs) {
-          cumulative += probs[topic];
-          if (rand <= cumulative) {
-            chosenTopic = topic;
-            break;
+        if (!chosenTopic) {
+          const rand = Math.random();
+          let cumulative = 0;
+          chosenTopic = 'tech';
+
+          for (const topic in probs) {
+            cumulative += probs[topic];
+            if (rand <= cumulative) {
+              chosenTopic = topic;
+              break;
+            }
           }
         }
 
@@ -2417,27 +2715,126 @@
       }
     }
 
-    // --- Neural Canvas Topology Visualizer (Left Panel) ---
-    class NeuralNetworkVisualizer {
+    // --- Super-Interactive Neural Network Visualizer ---
+    class InteractiveNeuralVisualizer {
       constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.angle = 0;
         this.pulses = [];
+        this.nodes = {};
+        this.hoveredTopic = null;
+        this.draggedTopic = null;
+        this.mousePos = { x: -100, y: -100 };
 
         this.init();
+        this.bindEvents();
         window.addEventListener('resize', () => this.resize());
       }
 
       init() {
         this.resize();
+        this.initNodes();
         this.animate();
       }
 
       resize() {
         const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width * (window.devicePixelRatio || 1) || 300;
-        this.canvas.height = rect.height * (window.devicePixelRatio || 1) || 260;
+        this.canvas.width = rect.width * (window.devicePixelRatio || 1) || 340;
+        this.canvas.height = rect.height * (window.devicePixelRatio || 1) || 270;
+      }
+
+      initNodes() {
+        const topicKeys = Object.keys(TOPICS);
+        topicKeys.forEach((key, index) => {
+          this.nodes[key] = {
+            id: key,
+            angleOffset: (index / topicKeys.length) * Math.PI * 2,
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            radius: 18,
+            isDragging: false
+          };
+        });
+      }
+
+      bindEvents() {
+        const getCanvasCoord = (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            x: (clientX - rect.left) * dpr,
+            y: (clientY - rect.top) * dpr
+          };
+        };
+
+        const handlePointerMove = (e) => {
+          const { x, y } = getCanvasCoord(e);
+          this.mousePos = { x, y };
+
+          if (this.draggedTopic && this.nodes[this.draggedTopic]) {
+            this.nodes[this.draggedTopic].x = x;
+            this.nodes[this.draggedTopic].y = y;
+            return;
+          }
+
+          let foundHover = null;
+          for (const key in this.nodes) {
+            const node = this.nodes[key];
+            const dist = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+            if (dist <= node.radius + 8) {
+              foundHover = key;
+              break;
+            }
+          }
+
+          if (foundHover !== this.hoveredTopic) {
+            this.hoveredTopic = foundHover;
+            const hintState = document.getElementById('canvas-hover-state');
+            if (foundHover) {
+              hintState.textContent = `Selected: ${TOPICS[foundHover].name}`;
+              hintState.style.color = TOPICS[foundHover].color;
+              sound.playHover();
+            } else {
+              hintState.textContent = `Interactive Node: None`;
+              hintState.style.color = 'var(--text-muted)';
+            }
+          }
+        };
+
+        const handlePointerDown = (e) => {
+          const { x, y } = getCanvasCoord(e);
+          for (const key in this.nodes) {
+            const node = this.nodes[key];
+            const dist = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+            if (dist <= node.radius + 8) {
+              this.draggedTopic = key;
+              node.isDragging = true;
+              openTopicInspector(key);
+              sound.playLike();
+              break;
+            }
+          }
+        };
+
+        const handlePointerUp = () => {
+          if (this.draggedTopic && this.nodes[this.draggedTopic]) {
+            this.nodes[this.draggedTopic].isDragging = false;
+            this.draggedTopic = null;
+          }
+        };
+
+        this.canvas.addEventListener('mousemove', handlePointerMove);
+        this.canvas.addEventListener('mousedown', handlePointerDown);
+        window.addEventListener('mouseup', handlePointerUp);
+
+        this.canvas.addEventListener('touchstart', handlePointerDown, { passive: true });
+        this.canvas.addEventListener('touchmove', handlePointerMove, { passive: true });
+        window.addEventListener('touchend', handlePointerUp);
       }
 
       triggerPulse(topicId) {
@@ -2458,83 +2855,111 @@
 
         const centerX = w / 2;
         const centerY = h / 2;
-        const radius = Math.min(w, h) * 0.35;
+        const orbitRadius = Math.min(w, h) * 0.35;
 
         this.angle += 0.007;
 
         const topicKeys = Object.keys(TOPICS);
-        const nodePositions = {};
+        const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
 
-        topicKeys.forEach((key, index) => {
-          const theta = (index / topicKeys.length) * Math.PI * 2 + this.angle;
-          const nx = centerX + Math.cos(theta) * radius;
-          const ny = centerY + Math.sin(theta) * (radius * 0.82);
-          nodePositions[key] = { x: nx, y: ny };
+        // Update Node Physics Positions
+        topicKeys.forEach((key) => {
+          const node = this.nodes[key];
+          const p = probs[key] || 0.16;
+          node.radius = (10 + p * 38) * dpr;
+
+          const targetX = centerX + Math.cos(node.angleOffset + this.angle) * orbitRadius;
+          const targetY = centerY + Math.sin(node.angleOffset + this.angle) * (orbitRadius * 0.82);
+
+          if (!node.isDragging) {
+            node.x += (targetX - node.x) * 0.1;
+            node.y += (targetY - node.y) * 0.1;
+          }
         });
 
-        // Connections between nodes
+        // Draw Synaptic Connections
         ctx.lineWidth = 1 * dpr;
         topicKeys.forEach((k1, i) => {
           topicKeys.forEach((k2, j) => {
             if (i < j) {
-              const p1 = nodePositions[k1];
-              const p2 = nodePositions[k2];
+              const n1 = this.nodes[k1];
+              const n2 = this.nodes[k2];
+              const isHighlighted = (this.hoveredTopic === k1 || this.hoveredTopic === k2);
+
               ctx.beginPath();
-              ctx.moveTo(p1.x, p1.y);
-              ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+              ctx.moveTo(n1.x, n1.y);
+              ctx.lineTo(n2.x, n2.y);
+              ctx.strokeStyle = isHighlighted ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 255, 255, 0.07)';
+              ctx.lineWidth = isHighlighted ? 2 * dpr : 1 * dpr;
               ctx.stroke();
             }
           });
         });
 
-        // Center hub
+        // Center Neural Processor Hub
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 16 * dpr, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
+        ctx.arc(centerX, centerY, 18 * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
         ctx.fill();
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 1.5 * dpr;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 10 * dpr;
         ctx.stroke();
 
-        const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = `${Math.round(9 * dpr)}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('AI', centerX, centerY);
+        ctx.restore();
 
-        // Topic nodes
+        // Draw Topic Nodes
         topicKeys.forEach(key => {
-          const pos = nodePositions[key];
+          const node = this.nodes[key];
           const topic = TOPICS[key];
           const p = probs[key] || 0.16;
-
-          const nodeRadius = (9 + p * 42) * dpr;
+          const isHovered = (this.hoveredTopic === key || state.selectedInspectorTopic === key);
 
           ctx.save();
           ctx.shadowColor = topic.color;
-          ctx.shadowBlur = 12 * dpr;
+          ctx.shadowBlur = (isHovered ? 20 : 10) * dpr;
 
+          // Main bubble circle
           ctx.beginPath();
-          ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
           ctx.fillStyle = topic.color;
-          ctx.globalAlpha = 0.85;
+          ctx.globalAlpha = isHovered ? 0.95 : 0.8;
           ctx.fill();
-          ctx.restore();
 
-          // Outer ring
+          // Active pulse outer ring
           ctx.beginPath();
-          ctx.arc(pos.x, pos.y, nodeRadius + (4 * dpr), 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, node.radius + ((isHovered ? 6 : 3) * dpr), 0, Math.PI * 2);
           ctx.strokeStyle = topic.color;
-          ctx.globalAlpha = 0.4;
+          ctx.globalAlpha = isHovered ? 0.8 : 0.35;
+          ctx.lineWidth = 1.5 * dpr;
           ctx.stroke();
+
+          // Percentage text directly inside node
+          ctx.fillStyle = '#060913';
+          ctx.font = `bold ${Math.round(Math.max(9, node.radius * 0.55))}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(`${Math.round(p * 100)}%`, node.x, node.y);
+
+          ctx.restore();
         });
 
-        // Animate pulses
+        // Animate Flying Pulses
         for (let i = this.pulses.length - 1; i >= 0; i--) {
           const pulse = this.pulses[i];
           pulse.progress += 0.04;
 
-          const targetPos = nodePositions[pulse.topicId];
-          if (targetPos) {
-            const px = centerX + (targetPos.x - centerX) * pulse.progress;
-            const py = centerY + (targetPos.y - centerY) * pulse.progress;
+          const targetNode = this.nodes[pulse.topicId];
+          if (targetNode) {
+            const px = centerX + (targetNode.x - centerX) * pulse.progress;
+            const py = centerY + (targetNode.y - centerY) * pulse.progress;
 
             ctx.beginPath();
             ctx.arc(px, py, 6 * dpr, 0, Math.PI * 2);
@@ -2555,6 +2980,61 @@
 
     let neuralViz = null;
 
+    // --- Open Topic Inspector Drawer ---
+    function openTopicInspector(topicId) {
+      state.selectedInspectorTopic = topicId;
+      const topic = TOPICS[topicId];
+      const inspector = document.getElementById('node-inspector');
+      const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+      const p = Math.round((probs[topicId] || 0) * 100);
+
+      document.getElementById('insp-name').textContent = topic.name;
+      document.getElementById('insp-dot').style.backgroundColor = topic.color;
+      document.getElementById('insp-dot').style.boxShadow = `0 0 8px ${topic.color}`;
+      document.getElementById('insp-prob').textContent = `${p}% Probability`;
+      document.getElementById('insp-prob').style.color = topic.color;
+      document.getElementById('insp-desc').textContent = `Weight: ${state.topicWeights[topicId].toFixed(1)} pts • Interactions: ${state.history.perTopicActions[topicId] || 0}`;
+
+      inspector.style.display = 'block';
+    }
+
+    // --- Build Manual Lab Sliders ---
+    function renderLabSliders() {
+      const container = document.getElementById('lab-sliders-container');
+      const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+
+      let html = '';
+      Object.keys(TOPICS).forEach(key => {
+        const topic = TOPICS[key];
+        const w = state.topicWeights[key];
+        const p = Math.round((probs[key] || 0) * 100);
+
+        html += `
+          <div class="lab-slider-row" style="--slider-color: ${topic.color};">
+            <div class="lab-slider-meta">
+              <span style="font-weight: 700; color: ${topic.color};">${topic.name}</span>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #fff;">${w.toFixed(1)} pts (${p}%)</span>
+            </div>
+            <input type="range" class="custom-range-slider" min="0.5" max="30" step="0.5" value="${w}" data-topic="${key}">
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      // Attach slider event listeners
+      container.querySelectorAll('.custom-range-slider').forEach(slider => {
+        slider.addEventListener('input', (e) => {
+          const t = slider.getAttribute('data-topic');
+          const val = parseFloat(e.target.value);
+          state.topicWeights[t] = val;
+          renderTopicWeightsList();
+          updateTelemetryMeters();
+          openTopicInspector(t);
+        });
+      });
+    }
+
     // --- Screen View Switcher ---
     function switchScreen(screenId) {
       document.querySelectorAll('.screen-view').forEach(el => {
@@ -2571,6 +3051,7 @@
       if (screenId === 'screen-dashboard') {
         stageBadge.style.display = 'inline-flex';
         if (neuralViz) neuralViz.resize();
+        renderLabSliders();
       } else {
         stageBadge.style.display = 'none';
       }
@@ -2646,6 +3127,7 @@
       state.stage = 1;
 
       renderTopicWeightsList();
+      renderLabSliders();
       updateTelemetryMeters();
       loadNextPost();
     }
@@ -2661,7 +3143,7 @@
         const pct = Math.round((probs[key] || 0) * 100);
 
         html += `
-          <div class="topic-weight-row" style="--topic-color: ${topic.color};">
+          <div class="topic-weight-row" style="--topic-color: ${topic.color};" onclick="openTopicInspector('${key}')" title="Click to inspect ${topic.name}">
             <div class="topic-weight-meta">
               <div class="topic-weight-label">
                 <span class="topic-dot"></span>
@@ -2762,9 +3244,9 @@
     }
 
     // --- Load Next Post ---
-    function loadNextPost() {
+    function loadNextPost(forceTopic = null) {
       const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
-      const post = RecommendationEngine.selectNextPost(probs, state.recentPostIds);
+      const post = RecommendationEngine.selectNextPost(probs, state.recentPostIds, forceTopic);
 
       state.currentPost = post;
       state.recentPostIds.push(post.id);
@@ -2845,6 +3327,7 @@
 
       spawnActionParticle(btnElement, topic);
       renderTopicWeightsList();
+      renderLabSliders();
       updateTelemetryMeters();
 
       const card = document.getElementById('active-post-card');
@@ -2876,7 +3359,6 @@
       const finalProbs = RecommendationEngine.calculateProbabilities(state.topicWeights);
       const metrics = RecommendationEngine.calculateMetrics(state.topicWeights, state.interactionCount);
 
-      // Render Before Bars
       const beforeContainer = document.getElementById('reveal-dist-before');
       let beforeHtml = '';
       Object.keys(TOPICS).forEach(key => {
@@ -2895,7 +3377,6 @@
       });
       beforeContainer.innerHTML = beforeHtml;
 
-      // Render After Bars
       const afterContainer = document.getElementById('reveal-dist-after');
       let afterHtml = '';
       let dominantKey = 'tech';
@@ -2926,14 +3407,12 @@
       });
       afterContainer.innerHTML = afterHtml;
 
-      // Fill Telemetry stats
       document.getElementById('reveal-stat-actions').textContent = `${state.interactionCount} (${state.history.likes} Likes, ${state.history.shares} Shares, ${state.history.skips} Skips)`;
       document.getElementById('reveal-stat-diversity').textContent = `${metrics.diversity}% (Started at 100%)`;
       document.getElementById('reveal-stat-dominant').textContent = `${TOPICS[dominantKey].name} (${maxProbVal}%)`;
       document.getElementById('reveal-stat-dominant').style.color = TOPICS[dominantKey].color;
       document.getElementById('reveal-stat-vanished').textContent = vanishedList.length > 0 ? vanishedList.join(', ') : 'None fully extinguished';
 
-      // Update Risk Tag in reveal
       const revealRiskTag = document.getElementById('reveal-risk-tag');
       revealRiskTag.className = 'risk-badge';
       if (metrics.risk === 'ECHO CHAMBER') {
@@ -2952,7 +3431,6 @@
     function breakTheBubble() {
       sound.playBreakBubble();
 
-      // Equalize all topic weights back to full diversity
       Object.keys(TOPICS).forEach(k => {
         state.topicWeights[k] = 10.0;
       });
@@ -2961,6 +3439,7 @@
       state.interactionCount = 0;
 
       renderTopicWeightsList();
+      renderLabSliders();
       updateTelemetryMeters();
       updateNarrative('⚡ Bubble Disrupted: Intentionally seeking diverse topics reshaped the recommendation matrix back to 100% diversity.');
 
@@ -3013,6 +3492,96 @@
 
       document.getElementById('reset-sim-btn').addEventListener('click', resetSimulation);
 
+      // Tab Switcher inside Algorithm Mind
+      document.querySelectorAll('.algo-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.algo-tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          document.querySelectorAll('.algo-tab-content').forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          const targetId = btn.getAttribute('data-tab');
+          document.getElementById(targetId).classList.add('active');
+
+          sound.playTone(500, 'sine', 0.06, 0.08);
+          if (targetId === 'tab-neural-graph' && neuralViz) neuralViz.resize();
+        });
+      });
+
+      // Inspector Action Buttons
+      document.getElementById('insp-btn-boost').addEventListener('click', () => {
+        const topic = state.selectedInspectorTopic;
+        state.topicWeights[topic] += 2.5;
+        sound.playLike();
+        if (neuralViz) neuralViz.triggerPulse(topic);
+        renderTopicWeightsList();
+        renderLabSliders();
+        updateTelemetryMeters();
+        openTopicInspector(topic);
+        updateNarrative(`Manual Boost: Injected +2.5 weight into #${TOPICS[topic].name}. Neural probability amplified.`);
+      });
+
+      document.getElementById('insp-btn-suppress').addEventListener('click', () => {
+        const topic = state.selectedInspectorTopic;
+        state.topicWeights[topic] = Math.max(0.5, state.topicWeights[topic] - 2.0);
+        sound.playSkip();
+        renderTopicWeightsList();
+        renderLabSliders();
+        updateTelemetryMeters();
+        openTopicInspector(topic);
+        updateNarrative(`Manual Suppression: Damped #${TOPICS[topic].name} by -2.0 points. Exposure probability reduced.`);
+      });
+
+      document.getElementById('insp-btn-force').addEventListener('click', () => {
+        const topic = state.selectedInspectorTopic;
+        sound.playShare();
+        loadNextPost(topic);
+        updateNarrative(`🎯 Signal Override: Forced feed generator to immediately sample post from #${TOPICS[topic].name}.`);
+      });
+
+      // Manual Lab Presets
+      document.getElementById('preset-tech-bubble').addEventListener('click', () => {
+        state.topicWeights = { tech: 28, env: 1, fit: 1, travel: 1, ent: 1, fin: 1 };
+        sound.playStageUp();
+        renderTopicWeightsList();
+        renderLabSliders();
+        updateTelemetryMeters();
+        loadNextPost('tech');
+        updateNarrative(`Simulation Preset: Forced 92% Echo Chamber concentration in #Technology.`);
+      });
+
+      document.getElementById('preset-balance').addEventListener('click', () => {
+        state.topicWeights = { tech: 10, env: 10, fit: 10, travel: 10, ent: 10, fin: 10 };
+        sound.playBreakBubble();
+        renderTopicWeightsList();
+        renderLabSliders();
+        updateTelemetryMeters();
+        loadNextPost();
+        updateNarrative(`Simulation Preset: Equalized all 6 categories to full 100% diversity.`);
+      });
+
+      document.getElementById('preset-random').addEventListener('click', () => {
+        Object.keys(TOPICS).forEach(k => {
+          state.topicWeights[k] = Math.round((Math.random() * 20 + 1) * 2) / 2;
+        });
+        sound.playStageUp();
+        renderTopicWeightsList();
+        renderLabSliders();
+        updateTelemetryMeters();
+        loadNextPost();
+        updateNarrative(`Simulation Preset: Injected randomized entropy wave into neural weights.`);
+      });
+
+      document.getElementById('preset-reset-init').addEventListener('click', () => {
+        setupSimulationFromSelection();
+        sound.playTone(350, 'sine', 0.1, 0.15);
+        updateNarrative(`Simulation Preset: Restored baseline weights from your original 3 selected categories.`);
+      });
+
+      // Card Action Buttons
       const btnLike = document.getElementById('btn-action-like');
       const btnShare = document.getElementById('btn-action-share');
       const btnSkip = document.getElementById('btn-action-skip');
@@ -3041,7 +3610,7 @@
     // --- App Bootstrap ---
     window.addEventListener('DOMContentLoaded', () => {
       new ParticleCanvas('bg-canvas');
-      neuralViz = new NeuralNetworkVisualizer('neural-canvas');
+      neuralViz = new InteractiveNeuralVisualizer('neural-canvas');
       initSelectionUI();
       initEvents();
     });
