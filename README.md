@@ -137,6 +137,7 @@ inside-the-feed/
 ├── xray-theme.js      # X-RAY mode + presentation behavior
 ├── favicon.svg
 ├── vercel.json        # Production route configuration
+├── LICENSE
 └── README.md
 ```
 
