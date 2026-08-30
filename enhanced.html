@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INSIDE THE FEED | X-Ray Algorithm Experience</title>
-  <meta name="theme-color" content="#f3efe6">
+  <title>INSIDE THE FEED | Algorithm Trace</title>
+  <meta name="theme-color" content="#0a0a0a">
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <style>
     *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f3efe6;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .shell{position:relative;width:100%;height:100%;background:#f3efe6}
-    .shell iframe{width:100%;height:100%;border:0;display:block;background:#f3efe6}
-    .boot{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#f3efe6;color:#11110f;transition:opacity .3s ease,visibility .3s ease}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0a0a0a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+    .shell{position:relative;width:100%;height:100%;background:#0a0a0a}
+    .shell iframe{width:100%;height:100%;border:0;display:block;background:#0a0a0a}
+    .boot{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#0a0a0a;color:#f4f4f0;transition:opacity .25s ease,visibility .25s ease}
     .boot.hidden{opacity:0;visibility:hidden;pointer-events:none}
-    .boot-mark{width:58px;height:58px;border:3px solid #11110f;display:grid;place-items:center;box-shadow:7px 7px 0 #ff4d2e;animation:pulse 1.1s steps(2,end) infinite}
-    .boot-mark:before{content:"X";font:900 24px/1 ui-monospace,monospace}
-    .boot-title{font-family:Georgia,serif;font-size:22px;font-weight:700}
-    .boot-sub{font-size:11px;color:#6e6a61;font-family:ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase}
-    @keyframes pulse{50%{transform:translate(-2px,-2px);box-shadow:9px 9px 0 #ff4d2e}}
+    .boot-mark{width:54px;height:54px;border:1px solid #333;border-radius:50%;display:grid;place-items:center;position:relative}
+    .boot-mark:before{content:"";width:8px;height:8px;border-radius:50%;background:#ff2b2b;box-shadow:0 0 0 7px rgba(255,43,43,.08)}
+    .boot-mark:after{content:"";position:absolute;inset:7px;border:1px dashed #30302e;border-radius:50%;animation:spin 2s linear infinite}
+    .boot-title{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+    .boot-sub{font-size:10px;color:#777;letter-spacing:.12em;text-transform:uppercase}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
-  <script src="./xray-theme.js?v=4" defer></script>
+  <script src="./xray-theme.js?v=5" defer></script>
 </head>
 <body>
   <div class="shell">
     <div class="boot" id="boot-screen">
       <div class="boot-mark"></div>
-      <div class="boot-title">Inside the Feed</div>
-      <div class="boot-sub">Exposing the invisible layer</div>
+      <div class="boot-title">Inside The Feed</div>
+      <div class="boot-sub">Tracing recommendation signals</div>
     </div>
-    <iframe id="feed-frame" src="./index.html?xray=4" title="Inside The Feed interactive simulation" allow="autoplay"></iframe>
+    <iframe id="feed-frame" src="./index.html?xray=5" title="Inside The Feed interactive simulation" allow="autoplay"></iframe>
   </div>
 </body>
 </html>
