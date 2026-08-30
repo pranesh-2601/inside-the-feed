@@ -21,34 +21,34 @@
     const link = d.createElement('link');
     link.id = 'xray-theme-css';
     link.rel = 'stylesheet';
-    link.href = './xray-theme.css?v=3';
+    link.href = './xray-theme.css?v=5';
     d.head.appendChild(link);
   }
 
   function rewriteCopy(d) {
     const eyebrow = d.querySelector('.hero-eyebrow');
-    if (eyebrow) eyebrow.textContent = 'VISUALIZING THE INVISIBLE / SOCIAL ALGORITHMS';
+    if (eyebrow) eyebrow.textContent = 'SYSTEM TRACE / SOCIAL RECOMMENDATION ENGINE';
 
     const title = d.getElementById('intro-main-title');
     if (title) title.textContent = 'Inside the Feed';
 
     const subtitle = d.querySelector('.hero-subtitle');
-    if (subtitle) subtitle.textContent = 'You see a post. The algorithm sees a signal.';
+    if (subtitle) subtitle.textContent = 'YOU SEE CONTENT. THE SYSTEM SEES SIGNALS.';
 
     const tagline = d.querySelector('.hero-tagline');
-    if (tagline) tagline.textContent = 'Use the feed normally. Then switch on X-RAY to reveal why each post was selected, which interests are being amplified, and which ones are quietly disappearing.';
+    if (tagline) tagline.textContent = 'Interact normally. Then switch on X-RAY to expose the hidden scoring layer deciding what gets amplified, repeated, and quietly removed from view.';
 
     const enter = d.querySelector('#btn-enter-feed span');
-    if (enter) enter.textContent = 'Start the Experiment';
+    if (enter) enter.textContent = 'ENTER SYSTEM';
 
     const leftTitle = d.querySelector('.panel-left-col .panel-title');
-    if (leftTitle) leftTitle.textContent = 'Algorithm Evidence';
+    if (leftTitle) leftTitle.textContent = 'SIGNAL MAP';
 
     const rightTitle = d.querySelector('.panel-right-col .panel-title');
-    if (rightTitle) rightTitle.textContent = 'Feed Evidence';
+    if (rightTitle) rightTitle.textContent = 'SYSTEM STATUS';
 
     const reveal = d.querySelector('#btn-manual-reveal span');
-    if (reveal) reveal.textContent = 'Open the Algorithm Report';
+    if (reveal) reveal.textContent = 'OPEN TRACE REPORT';
   }
 
   function readWeights(d) {
@@ -68,7 +68,7 @@
     if (!label) {
       label = d.createElement('div');
       label.className = 'xray-label';
-      label.textContent = 'ALGORITHM X-RAY';
+      label.textContent = '● ALGORITHM TRACE';
       card.appendChild(label);
     }
 
@@ -94,12 +94,12 @@
     const progress = d.getElementById('interaction-step-counter')?.textContent?.trim() || 'Interaction 0 / 12';
 
     const html = [
-      '<h4>Why this post reached you</h4>',
-      `<div class="xray-reason"><span>This post category</span><strong>${current} · ${currentPct}%</strong></div>`,
-      `<div class="xray-reason"><span>Strongest learned signal</span><strong>${top.name} · ${top.pct}%</strong></div>`,
-      `<div class="xray-reason"><span>Next strongest signal</span><strong>${second.name} · ${second.pct}%</strong></div>`,
-      `<div class="xray-reason"><span>Experiment progress</span><strong>${progress}</strong></div>`,
-      `<div class="xray-suppressed">Losing visibility: ${low.length ? low.map(x => `${x.name} ${x.pct}%`).join(' / ') : 'not enough data yet'}</div>`
+      '<h4>TRACE / WHY THIS POST REACHED YOU</h4>',
+      `<div class="xray-reason"><span>CURRENT CATEGORY</span><strong>${current} · ${currentPct}%</strong></div>`,
+      `<div class="xray-reason"><span>PRIMARY SIGNAL</span><strong>${top.name} · ${top.pct}%</strong></div>`,
+      `<div class="xray-reason"><span>SECONDARY SIGNAL</span><strong>${second.name} · ${second.pct}%</strong></div>`,
+      `<div class="xray-reason"><span>SESSION</span><strong>${progress}</strong></div>`,
+      `<div class="xray-suppressed">LOW VISIBILITY → ${low.length ? low.map(x => `${x.name} ${x.pct}%`).join(' / ') : 'not enough data yet'}</div>`
     ].join('');
 
     if (overlay.innerHTML !== html) overlay.innerHTML = html;
@@ -133,14 +133,14 @@
     btn.id = 'xray-toggle';
     btn.className = 'xray-toggle';
     btn.type = 'button';
-    btn.textContent = 'X-RAY: OFF';
+    btn.textContent = 'X-RAY OFF';
     btn.setAttribute('aria-pressed', 'false');
 
     btn.addEventListener('click', () => {
       const on = !d.documentElement.classList.contains('xray-on');
       d.documentElement.classList.toggle('xray-on', on);
       btn.classList.toggle('active', on);
-      btn.textContent = on ? 'X-RAY: ON' : 'X-RAY: OFF';
+      btn.textContent = on ? 'X-RAY ON' : 'X-RAY OFF';
       btn.setAttribute('aria-pressed', String(on));
       if (on) refreshOverlay(d);
     });
@@ -187,8 +187,6 @@
     syncStage(d);
     bindSafeObservers(d);
 
-    // Refresh after user actions. No observer watches the post card itself,
-    // so X-Ray overlay updates cannot recursively trigger themselves.
     ['btn-action-like', 'btn-action-share', 'btn-action-skip', 'btn-break-bubble', 'btn-start-feed'].forEach(id => {
       const el = d.getElementById(id);
       if (!el || el.dataset.xrayActionBound) return;
@@ -199,7 +197,6 @@
       }, true);
     });
 
-    // Let the iframe paint the new paper theme before removing the loader.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (boot) boot.classList.add('hidden');
     }));
