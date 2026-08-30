@@ -1,0 +1,3050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INSIDE THE FEED | You choose the clicks. The algorithm shapes your world.</title>
+  <meta name="description" content="Visualizing the Invisible: An interactive real-time simulation of recommendation algorithms, neural reinforcement loops, and filter bubble formation.">
+  <style>
+    /* ==========================================================================
+       INSIDE THE FEED — DESIGN SYSTEM & CYBERNETIC PALETTE
+       ========================================================================== */
+    :root {
+      --bg-dark: #060913;
+      --bg-surface: #0c1222;
+      --bg-surface-elevated: #131d38;
+      --bg-glass: rgba(12, 18, 34, 0.78);
+      --bg-glass-card: rgba(19, 29, 56, 0.75);
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-glass-bright: rgba(0, 240, 255, 0.35);
+
+      --color-tech: #00f0ff;
+      --color-tech-glow: rgba(0, 240, 255, 0.4);
+      --color-env: #10b981;
+      --color-env-glow: rgba(16, 185, 129, 0.4);
+      --color-fit: #f97316;
+      --color-fit-glow: rgba(249, 115, 22, 0.4);
+      --color-travel: #8b5cf6;
+      --color-travel-glow: rgba(139, 92, 246, 0.4);
+      --color-ent: #ec4899;
+      --color-ent-glow: rgba(236, 72, 153, 0.4);
+      --color-fin: #eab308;
+      --color-fin-glow: rgba(234, 179, 8, 0.4);
+
+      --color-like: #f43f5e;
+      --color-share: #3b82f6;
+      --color-skip: #64748b;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
+      --shadow-neon-cyan: 0 0 30px rgba(0, 240, 255, 0.35);
+      --shadow-neon-magenta: 0 0 30px rgba(236, 72, 153, 0.35);
+      
+      --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-spring: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--color-tech);
+      outline-offset: 3px;
+      box-shadow: var(--shadow-neon-cyan);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Top Navigation Bar */
+    header.app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.75rem;
+      background: rgba(6, 9, 19, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--color-tech), var(--color-ent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+    }
+
+    .brand-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #ffffff 40%, #00f0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.95rem;
+      border-radius: var(--radius-full);
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-tech);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stage-badge .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-tech);
+      box-shadow: 0 0 8px var(--color-tech);
+      animation: pulseAnim 1.8s infinite;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      padding: 0.5rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: var(--transition-smooth);
+    }
+
+    .icon-btn:hover {
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.25);
+      background: var(--bg-surface-elevated);
+    }
+
+    /* Screen Views Management */
+    main.app-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem 1.25rem;
+      min-height: calc(100vh - 65px);
+    }
+
+    .screen-view {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .screen-view.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       1. INTRO SCREEN
+       ========================================================================== */
+    .intro-hero {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1rem;
+      max-width: 940px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1.1rem;
+      border-radius: var(--radius-full);
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid rgba(236, 72, 153, 0.35);
+      color: var(--color-ent);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 7.5vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 20%, #00f0ff 65%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 1.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-tagline {
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      max-width: 690px;
+      margin-bottom: 2.75rem;
+      line-height: 1.7;
+    }
+
+    .hero-quote-highlight {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0, 240, 255, 0.08);
+      border-left: 3px solid var(--color-tech);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 2.25rem;
+      text-align: center;
+    }
+
+    .btn-glow-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.15rem 3rem;
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #060913;
+      background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%);
+      border: none;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.5), 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: var(--transition-spring);
+    }
+
+    .btn-glow-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 55px rgba(0, 240, 255, 0.8), 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-glow-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .intro-feature-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 3.5rem;
+    }
+
+    .feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1.15rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .feature-pill svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--color-tech);
+    }
+
+    /* ==========================================================================
+       2. INITIAL INTEREST SELECTION
+       ========================================================================== */
+    .selection-container {
+      max-width: 980px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+
+    .selection-header h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
+    }
+
+    .selection-header p {
+      color: var(--text-secondary);
+      font-size: 1.08rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .topic-card {
+      position: relative;
+      background: var(--bg-glass-card);
+      border: 2px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem 1.35rem;
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition-spring);
+      backdrop-filter: blur(12px);
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.3);
+      background: var(--bg-surface-elevated);
+    }
+
+    .topic-card.selected {
+      border-color: var(--topic-accent, var(--color-tech));
+      box-shadow: 0 0 32px var(--topic-glow, var(--color-tech-glow)), inset 0 0 15px var(--topic-glow, var(--color-tech-glow));
+      background: rgba(19, 29, 56, 0.95);
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .topic-icon-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--topic-accent, #fff);
+      transition: var(--transition-smooth);
+    }
+
+    .topic-card.selected .topic-icon-wrap {
+      background: var(--topic-accent);
+      color: #060913;
+    }
+
+    .topic-icon-wrap svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    .topic-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .topic-card-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .selection-check {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.1rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .topic-card.selected .selection-check {
+      background: var(--topic-accent);
+      border-color: var(--topic-accent);
+    }
+
+    .selection-check svg {
+      width: 14px;
+      height: 14px;
+      fill: #060913;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: var(--transition-smooth);
+    }
+
+    .topic-card.selected .selection-check svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .selection-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .selection-count-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .selection-count-indicator span {
+      color: var(--color-tech);
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       3 & 4 & 5 & 6. INTERACTIVE SIMULATION DASHBOARD (3 COLUMNS)
+       ========================================================================== */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr 340px;
+      gap: 1.5rem;
+      align-items: start;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 1240px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr 1fr;
+      }
+      .panel-feed-col {
+        grid-column: 1 / -1;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-panel {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.15rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .panel-title-group svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--color-tech);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+    }
+
+    /* LEFT: Algorithm Mind Panel */
+    .algo-viz-box {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      background: rgba(6, 9, 19, 0.7);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 1rem;
+    }
+
+    #neural-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .narrative-stream-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-left: 4px solid var(--color-tech);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem;
+      margin-bottom: 1rem;
+      min-height: 80px;
+    }
+
+    .narrative-label {
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--color-tech);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .narrative-text {
+      font-size: 0.84rem;
+      color: #e2e8f0;
+      line-height: 1.45;
+      transition: opacity 0.2s ease;
+    }
+
+    .topic-weights-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .topic-weight-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.82rem;
+    }
+
+    .topic-weight-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topic-weight-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .topic-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--topic-color, #fff);
+      box-shadow: 0 0 6px var(--topic-color, #fff);
+    }
+
+    .topic-weight-pct {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .weight-progress-track {
+      width: 100%;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .weight-progress-fill {
+      height: 100%;
+      background: var(--topic-color, var(--color-tech));
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 10px var(--topic-color, var(--color-tech));
+    }
+
+    /* CENTER: Main Feed Stream */
+    .panel-feed-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .feed-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.25rem;
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+    }
+
+    .stage-tracker-title {
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .interaction-count-badge {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--color-tech);
+      background: rgba(0, 240, 255, 0.12);
+      padding: 0.25rem 0.7rem;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      font-weight: 700;
+    }
+
+    .feed-card-wrapper {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Interactive Post Card */
+    .post-card {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .post-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--card-topic-color, var(--color-tech));
+      box-shadow: 0 0 16px var(--card-topic-color, var(--color-tech));
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.1rem;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .author-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #060913;
+      background: linear-gradient(135deg, #ffffff, #94a3b8);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .author-names {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .author-display-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .author-handle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .post-topic-tag {
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--card-topic-glow, rgba(0, 240, 255, 0.15));
+      color: var(--card-topic-color, var(--color-tech));
+      border: 1px solid var(--card-topic-color, var(--color-tech));
+    }
+
+    .post-text-content {
+      font-size: 1.05rem;
+      color: #f1f5f9;
+      line-height: 1.6;
+      margin-bottom: 1.35rem;
+    }
+
+    .post-visual-box {
+      width: 100%;
+      height: 220px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 1.35rem;
+      background: #090e1d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .post-visual-box svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Action Bar */
+    .post-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .feed-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.8rem 0.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      background: var(--bg-glass-card);
+      color: var(--text-primary);
+      transition: var(--transition-smooth);
+    }
+
+    .feed-btn svg {
+      width: 19px;
+      height: 19px;
+      fill: currentColor;
+    }
+
+    .btn-like:hover {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--color-like);
+      color: #ff6b8b;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-share:hover {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: var(--color-share);
+      color: #60a5fa;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-skip:hover {
+      background: rgba(100, 116, 139, 0.22);
+      border-color: var(--color-skip);
+      color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    /* Flying Action Data Packet */
+    .flying-packet {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px currentColor;
+      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+    }
+
+    /* RIGHT: Real-time Telemetry & Live Meters */
+    .metrics-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .metric-card {
+      background: rgba(6, 9, 19, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.05rem;
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+    }
+
+    .metric-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    /* Risk Status Badge */
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.28rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .risk-badge.risk-low {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid #10b981;
+    }
+
+    .risk-badge.risk-moderate {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid #eab308;
+    }
+
+    .risk-badge.risk-high {
+      background: rgba(249, 115, 22, 0.18);
+      color: #fb923c;
+      border: 1px solid #f97316;
+    }
+
+    .risk-badge.risk-echo {
+      background: rgba(239, 68, 68, 0.28);
+      color: #f87171;
+      border: 1px solid #ef4444;
+      animation: echoFlashing 1.2s infinite alternate;
+    }
+
+    @keyframes echoFlashing {
+      0% { box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+      100% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.95); }
+    }
+
+    .meter-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .meter-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+    }
+
+    /* Stacked Diversity Spectrum Bar */
+    .diversity-spectrum {
+      display: flex;
+      height: 11px;
+      width: 100%;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      margin-top: 0.5rem;
+    }
+
+    .spectrum-segment {
+      height: 100%;
+      transition: width 0.45s ease;
+    }
+
+    .reveal-trigger-btn {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2));
+      border: 1px solid rgba(236, 72, 153, 0.5);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+      margin-top: 0.5rem;
+    }
+
+    .reveal-trigger-btn:hover {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), rgba(139, 92, 246, 0.4));
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.45);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       8. FINAL REVEAL MODAL & COMPARISON SCREEN
+       ========================================================================== */
+    .reveal-container {
+      max-width: 1120px;
+      margin: 1rem auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-glass-bright);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 2.25rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), var(--shadow-neon-cyan);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reveal-container::before {
+      content: "";
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .reveal-header {
+      text-align: center;
+      margin-bottom: 2.25rem;
+    }
+
+    .reveal-header h2 {
+      font-size: clamp(2.2rem, 4.5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 35%, var(--color-tech) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .focal-quote-box {
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid rgba(236, 72, 153, 0.45);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 1.5rem auto 2.25rem auto;
+      max-width: 820px;
+      text-align: center;
+    }
+
+    .focal-quote-text {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+
+    .focal-quote-sub {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-top: 0.6rem;
+      line-height: 1.5;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .comparison-card.card-after {
+      border-color: rgba(236, 72, 153, 0.45);
+      box-shadow: 0 0 30px rgba(236, 72, 153, 0.15);
+    }
+
+    .comp-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .comp-distribution-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .comp-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .comp-bar-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .comp-bar-fill {
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bar-color, var(--color-tech));
+      transition: width 0.8s ease;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.15rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .insight-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+    }
+
+    .insight-label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      margin-bottom: 0.4rem;
+    }
+
+    .insight-val {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .insight-val.accent-vanished {
+      color: #94a3b8;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .reveal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+
+    .btn-break-bubble {
+      background: linear-gradient(135deg, #10b981 0%, #00f0ff 100%);
+      color: #060913;
+      font-weight: 800;
+      font-size: 1.08rem;
+      padding: 1.1rem 2.5rem;
+      border: none;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      box-shadow: 0 0 32px rgba(16, 185, 129, 0.5);
+      transition: var(--transition-spring);
+    }
+
+    .btn-break-bubble:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.8);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 1.1rem 2rem;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #fff;
+    }
+
+    .explainer-callout {
+      margin-top: 2rem;
+      padding: 1.35rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      border-left: 4px solid var(--color-travel);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Particle Canvas & Grid -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- Top Application Bar -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">Inside The Feed</h1>
+      </div>
+    </div>
+
+    <div id="header-stage-badge" class="stage-badge" style="display: none;" aria-live="polite">
+      <span class="pulse-dot"></span>
+      <span id="current-stage-name">Stage 1: Exploration</span>
+    </div>
+
+    <div class="nav-actions">
+      <button id="sound-toggle-btn" class="icon-btn" aria-label="Toggle sound effects" title="Toggle audio synthesizer">
+        <svg id="sound-icon-on" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <span id="sound-label">Audio ON</span>
+      </button>
+      <button id="reset-sim-btn" class="icon-btn" aria-label="Reset simulation" title="Reset and restart from scratch">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+        <span>Reset</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+
+    <!-- ==========================================================================
+         SCREEN 1: INTRO SPLASH
+         ========================================================================== -->
+    <section id="screen-intro" class="screen-view active" aria-labelledby="intro-main-title">
+      <div class="intro-hero">
+        <div class="hero-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          Visualizing the Invisible Algorithm
+        </div>
+
+        <h2 id="intro-main-title" class="hero-title">Inside The Feed</h2>
+        <p class="hero-subtitle">“You choose the clicks. The algorithm shapes your world.”</p>
+
+        <div class="hero-quote-highlight">
+          “Every click teaches the algorithm. Can you notice when your feed stops being your choice?”
+        </div>
+        
+        <p class="hero-tagline">
+          Social media recommendation engines learn from every like, share, and skipped post in real time. Experience firsthand how machine learning optimizes for engagement and gradually constructs a digital filter bubble.
+        </p>
+
+        <button id="btn-enter-feed" class="btn-glow-primary" aria-label="Enter your feed simulation">
+          <span>Enter Your Feed</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/>
+          </svg>
+        </button>
+
+        <div class="intro-feature-pills">
+          <div class="feature-pill">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            <span>Real-Time Scoring System</span>
+          </div>
+          <div class="feature-pill">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.57 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+            <span>Algorithm Mind Neural Map</span>
+          </div>
+          <div class="feature-pill">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            <span>Filter Bubble Reveal & Breakout</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================================
+         SCREEN 2: INITIAL INTEREST SELECTION
+         ========================================================================== -->
+    <section id="screen-selection" class="screen-view" aria-labelledby="selection-title">
+      <div class="selection-container">
+        <div class="selection-header">
+          <h2 id="selection-title">Calibrate Your Initial Interests</h2>
+          <p>Select any <strong>three (3)</strong> categories to initialize your baseline recommendation vector.</p>
+        </div>
+
+        <div class="topics-grid" role="group" aria-label="Topic Selection Cards">
+          
+          <!-- Technology -->
+          <div class="topic-card" data-topic="tech" style="--topic-accent: var(--color-tech); --topic-glow: var(--color-tech-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Technology</h3>
+            <p class="topic-card-desc">Quantum computing, neural interfaces, robotics, and cybernetic architectures.</p>
+          </div>
+
+          <!-- Environment -->
+          <div class="topic-card" data-topic="env" style="--topic-accent: var(--color-env); --topic-glow: var(--color-env-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Environment</h3>
+            <p class="topic-card-desc">Renewable energy, ocean rewilding, ecological science, and climate resilience.</p>
+          </div>
+
+          <!-- Fitness -->
+          <div class="topic-card" data-topic="fit" style="--topic-accent: var(--color-fit); --topic-glow: var(--color-fit-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29l-1.43-1.43z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Fitness</h3>
+            <p class="topic-card-desc">Longevity biohacking, peak athletic training, metabolic science, and nutrition.</p>
+          </div>
+
+          <!-- Travel -->
+          <div class="topic-card" data-topic="travel" style="--topic-accent: var(--color-travel); --topic-glow: var(--color-travel-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Travel</h3>
+            <p class="topic-card-desc">Remote alpine explorations, ancient architectural wonders, and global frontiers.</p>
+          </div>
+
+          <!-- Entertainment -->
+          <div class="topic-card" data-topic="ent" style="--topic-accent: var(--color-ent); --topic-glow: var(--color-ent-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Entertainment</h3>
+            <p class="topic-card-desc">Immersive cinema, interactive voxel engines, synthwave soundscapes, and digital arts.</p>
+          </div>
+
+          <!-- Finance -->
+          <div class="topic-card" data-topic="fin" style="--topic-accent: var(--color-fin); --topic-glow: var(--color-fin-glow);" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="selection-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="topic-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+            </div>
+            <h3 class="topic-card-title">Finance</h3>
+            <p class="topic-card-desc">Global macro markets, algorithmic ventures, venture funding, and wealth architecture.</p>
+          </div>
+
+        </div>
+
+        <div class="selection-footer">
+          <div class="selection-count-indicator">
+            Selected: <span id="selected-count-badge">0 / 3</span>
+          </div>
+          <button id="btn-start-feed" class="btn-glow-primary" disabled style="opacity: 0.5; pointer-events: none;" aria-label="Calibrate neural algorithm and begin feed">
+            <span>Calibrate Algorithm & Launch</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================================
+         SCREEN 3: MAIN SIMULATION DASHBOARD (3 COLUMNS)
+         ========================================================================== -->
+    <section id="screen-dashboard" class="screen-view" aria-label="Interactive Feed Simulation Dashboard">
+      <div class="dashboard-layout">
+        
+        <!-- LEFT COLUMN: ALGORITHM MIND -->
+        <aside class="glass-panel panel-left-col" aria-label="Algorithm Visualization Panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.57 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+              <h2 class="panel-title">Algorithm Mind</h2>
+            </div>
+            <span class="topic-dot" style="background: var(--color-tech); box-shadow: 0 0 10px var(--color-tech);"></span>
+          </div>
+
+          <!-- Neural Topology Canvas -->
+          <div class="algo-viz-box" id="neural-container">
+            <canvas id="neural-canvas"></canvas>
+          </div>
+
+          <!-- Real-Time Thought Stream -->
+          <div class="narrative-stream-box" aria-live="polite">
+            <div class="narrative-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <span>Live Neural Telemetry</span>
+            </div>
+            <p id="narrative-stream-text" class="narrative-text">
+              Baseline initialized. Equal weights assigned to your 3 selected topics. Monitoring user micro-actions...
+            </p>
+          </div>
+
+          <!-- Dynamic Probability Weight Distribution -->
+          <div class="topic-weights-list" id="topic-weights-container">
+            <!-- Rendered by JS -->
+          </div>
+        </aside>
+
+        <!-- CENTER COLUMN: INTERACTIVE SOCIAL FEED -->
+        <div class="panel-feed-col" aria-label="Social Feed Stream">
+          
+          <!-- Feed Status Strip -->
+          <div class="feed-status-bar">
+            <div class="stage-tracker-title">
+              <span id="stage-banner-tag">Stage 1: Exploration</span>
+            </div>
+            <div class="interaction-count-badge" id="interaction-step-counter">
+              Interaction 0 / 12
+            </div>
+          </div>
+
+          <!-- Active Card Container -->
+          <div class="feed-card-wrapper">
+            <article class="post-card" id="active-post-card" style="--card-topic-color: var(--color-tech); --card-topic-glow: var(--color-tech-glow);">
+              
+              <div class="post-author-row">
+                <div class="author-info">
+                  <div class="author-avatar" id="card-author-avatar">AI</div>
+                  <div class="author-names">
+                    <span class="author-display-name" id="card-author-name">Dr. Elena Vance</span>
+                    <span class="author-handle" id="card-author-handle">@elena_quantum</span>
+                  </div>
+                </div>
+                <span class="post-topic-tag" id="card-topic-badge">Technology</span>
+              </div>
+
+              <p class="post-text-content" id="card-text-content">
+                Just achieved quantum coherence exceeding 100 microseconds on our room-temperature photonic lattice. The future of synthetic intelligence compute is accelerating faster than predicted.
+              </p>
+
+              <!-- Dynamic Graphic Vector Canvas / SVG -->
+              <div class="post-visual-box" id="card-visual-slot">
+                <!-- Injected inline SVG illustration -->
+              </div>
+
+              <!-- Action Bar -->
+              <div class="post-action-row">
+                <button class="feed-btn btn-like" id="btn-action-like" aria-label="Like this post (+2 topic score)" title="Like (+2 Weight)">
+                  <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  <span>Like (+2)</span>
+                </button>
+
+                <button class="feed-btn btn-share" id="btn-action-share" aria-label="Share this post (+3 topic score)" title="Share (+3 Weight)">
+                  <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                  <span>Share (+3)</span>
+                </button>
+
+                <button class="feed-btn btn-skip" id="btn-action-skip" aria-label="Skip this post (-1 topic score)" title="Skip (-1 Weight)">
+                  <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                  <span>Skip (-1)</span>
+                </button>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- Shortcuts Hint -->
+          <div style="text-align: center; font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">
+            Keyboard: [L] Like &nbsp;•&nbsp; [S] Share &nbsp;•&nbsp; [K] Skip
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: LIVE TELEMETRY METRICS -->
+        <aside class="glass-panel panel-right-col" aria-label="Live Algorithm Telemetry Metrics">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+              <h2 class="panel-title">Live Telemetry</h2>
+            </div>
+            <span class="topic-dot" style="background: var(--color-ent); box-shadow: 0 0 10px var(--color-ent);"></span>
+          </div>
+
+          <div class="metrics-stack">
+            
+            <!-- Personalization Index -->
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-name">Personalization</span>
+                <span class="metric-val" id="metric-personalization-val">15%</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="meter-personalization-fill" style="width: 15%; background: var(--color-tech); box-shadow: 0 0 8px var(--color-tech);"></div>
+              </div>
+            </div>
+
+            <!-- Feed Diversity (Entropy) -->
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-name">Feed Diversity</span>
+                <span class="metric-val" id="metric-diversity-val">100%</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="meter-diversity-fill" style="width: 100%; background: var(--color-env); box-shadow: 0 0 8px var(--color-env);"></div>
+              </div>
+            </div>
+
+            <!-- Algorithm Confidence -->
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-name">Algorithmic Confidence</span>
+                <span class="metric-val" id="metric-confidence-val">18%</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="meter-confidence-fill" style="width: 18%; background: var(--color-travel); box-shadow: 0 0 8px var(--color-travel);"></div>
+              </div>
+            </div>
+
+            <!-- Filter Bubble Risk -->
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-name">Filter Bubble Risk</span>
+                <span class="risk-badge risk-low" id="metric-risk-badge">LOW</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="meter-risk-fill" style="width: 15%; background: #10b981;"></div>
+              </div>
+            </div>
+
+            <!-- Overall Category Spectrum -->
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-name">Feed Spectrum</span>
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono);">Real-time</span>
+              </div>
+              <div class="diversity-spectrum" id="diversity-spectrum-bar">
+                <!-- Stacked color segments -->
+              </div>
+            </div>
+
+            <!-- Manual Trigger Button to Reveal -->
+            <button id="btn-manual-reveal" class="reveal-trigger-btn" aria-label="View deep algorithm diagnostic reveal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              <span>Inspect Echo Chamber Analysis</span>
+            </button>
+
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+
+    <!-- ==========================================================================
+         SCREEN 4: FINAL REVEAL (THE ALGORITHMIC MIRROR)
+         ========================================================================== -->
+    <section id="screen-reveal" class="screen-view" aria-labelledby="reveal-title">
+      <div class="reveal-container">
+        
+        <div class="reveal-header">
+          <h2 id="reveal-title">The Algorithmic Mirror</h2>
+          <p style="color: var(--text-secondary); font-size: 1.08rem;">How subtle machine learning optimizations transformed your information reality.</p>
+        </div>
+
+        <div class="focal-quote-box">
+          <p class="focal-quote-text">“You chose each click.<br>But you did not choose what disappeared.”</p>
+          <p class="focal-quote-sub">Recommendation algorithms optimize for immediate retention metrics, steadily extinguishing exposure to different ideas and perspectives.</p>
+        </div>
+
+        <!-- Before vs After Comparison Grid -->
+        <div class="comparison-grid">
+          
+          <!-- Before Card -->
+          <div class="comparison-card">
+            <div class="comp-title">
+              <span>Your Feed at the Beginning</span>
+              <span class="stage-badge" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #fff;">Balanced Choice</span>
+            </div>
+            <div class="comp-distribution-bars" id="reveal-dist-before">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- After Card -->
+          <div class="comparison-card card-after">
+            <div class="comp-title">
+              <span>Your Feed After Learning</span>
+              <span class="risk-badge risk-echo" id="reveal-risk-tag">Echo Chamber</span>
+            </div>
+            <div class="comp-distribution-bars" id="reveal-dist-after">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telemetry Summary Grid -->
+        <div class="insights-grid">
+          <div class="insight-box">
+            <div class="insight-label">Total Clicks & Actions</div>
+            <div class="insight-val" id="reveal-stat-actions">12 Interactions</div>
+          </div>
+          <div class="insight-box">
+            <div class="insight-label">Final Feed Diversity</div>
+            <div class="insight-val" id="reveal-stat-diversity" style="color: #f87171;">18% (Severe Drop)</div>
+          </div>
+          <div class="insight-box">
+            <div class="insight-label">Dominant Reinforced Category</div>
+            <div class="insight-val" id="reveal-stat-dominant" style="color: var(--color-tech);">Technology (74%)</div>
+          </div>
+          <div class="insight-box">
+            <div class="insight-label">Extinguished Categories</div>
+            <div class="insight-val accent-vanished" id="reveal-stat-vanished">Fitness, Environment</div>
+          </div>
+        </div>
+
+        <div class="explainer-callout">
+          <strong>The Algorithmic Trap:</strong> Machine learning feed algorithms do not evaluate truth, nuance, or intellectual balance—they optimize purely for predicted engagement. As you interact with specific signals, the algorithm aggressively deprioritizes everything else to guarantee retention, enclosing you in an automated filter bubble.
+        </div>
+
+        <div class="reveal-actions" style="margin-top: 2.5rem;">
+          <button id="btn-break-bubble" class="btn-break-bubble" aria-label="Break the filter bubble and restore diversity">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/></svg>
+            <span>Break My Bubble</span>
+          </button>
+          
+          <button id="btn-try-again" class="btn-outline" aria-label="Restart simulation with new choices">
+            <span>Try Again</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       JAVASCRIPT SIMULATION CORE & INTERACTION ENGINE
+       ========================================================================== -->
+  <script>
+    /**
+     * INSIDE THE FEED — CORE SIMULATION ENGINE
+     */
+
+    // --- Audio Synthesis via Web Audio API ---
+    class SynthAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.15) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio error:", e);
+        }
+      }
+
+      playLike() {
+        if (!this.enabled) return;
+        this.playTone(523.25, 'sine', 0.18, 0.2); // C5
+        setTimeout(() => this.playTone(659.25, 'sine', 0.25, 0.25), 60); // E5
+      }
+
+      playShare() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(900, this.ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.25);
+        } catch(e){}
+      }
+
+      playSkip() {
+        if (!this.enabled) return;
+        this.playTone(190, 'sine', 0.08, 0.12);
+      }
+
+      playStageUp() {
+        if (!this.enabled) return;
+        [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'sine', 0.3, 0.15), idx * 70);
+        });
+      }
+
+      playBreakBubble() {
+        if (!this.enabled) return;
+        [261.63, 329.63, 392, 523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'triangle', 0.45, 0.2), idx * 60);
+        });
+      }
+    }
+
+    const sound = new SynthAudio();
+
+    // --- Topic Definitions & Meta ---
+    const TOPICS = {
+      tech: {
+        id: 'tech',
+        name: 'Technology',
+        color: '#00f0ff',
+        glow: 'rgba(0, 240, 255, 0.4)',
+        icon: '<path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>'
+      },
+      env: {
+        id: 'env',
+        name: 'Environment',
+        color: '#10b981',
+        glow: 'rgba(16, 185, 129, 0.4)',
+        icon: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.4z"/>'
+      },
+      fit: {
+        id: 'fit',
+        name: 'Fitness',
+        color: '#f97316',
+        glow: 'rgba(249, 115, 22, 0.4)',
+        icon: '<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29l-1.43-1.43z"/>'
+      },
+      travel: {
+        id: 'travel',
+        name: 'Travel',
+        color: '#8b5cf6',
+        glow: 'rgba(139, 92, 246, 0.4)',
+        icon: '<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>'
+      },
+      ent: {
+        id: 'ent',
+        name: 'Entertainment',
+        color: '#ec4899',
+        glow: 'rgba(236, 72, 153, 0.4)',
+        icon: '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>'
+      },
+      fin: {
+        id: 'fin',
+        name: 'Finance',
+        color: '#eab308',
+        glow: 'rgba(234, 179, 8, 0.4)',
+        icon: '<path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>'
+      }
+    };
+
+    // --- Rich Fictional Post Database (24 Handcrafted Posts with Inline SVG Illustrations) ---
+    const POSTS_DATABASE = [
+      // Technology Posts
+      {
+        id: 'tech-1',
+        topic: 'tech',
+        author: 'Dr. Elena Vance',
+        handle: '@elena_quantum',
+        avatarText: 'EV',
+        content: 'Achieved room-temperature quantum coherence on our nanophotonic lattice. The speedup for synthetic intelligence compute models will render classical hardware obsolete within 4 years.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gTech1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.2"/>
+            </linearGradient>
+          </defs>
+          <rect width="100%" height="100%" fill="#0a1020"/>
+          <circle cx="200" cy="100" r="60" stroke="#00f0ff" stroke-width="1.5" fill="none" opacity="0.6"/>
+          <circle cx="200" cy="100" r="35" stroke="#38bdf8" stroke-width="2" fill="url(#gTech1)"/>
+          <line x1="80" y1="100" x2="320" y2="100" stroke="#00f0ff" stroke-dasharray="4 4" stroke-width="1.5" opacity="0.7"/>
+          <line x1="200" y1="30" x2="200" y2="170" stroke="#00f0ff" stroke-dasharray="4 4" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="140" cy="70" r="6" fill="#00f0ff"/>
+          <circle cx="260" cy="130" r="6" fill="#38bdf8"/>
+          <text x="200" y="105" fill="#fff" font-size="12" font-family="monospace" text-anchor="middle" font-weight="bold">Q-CORE 4.0</text>
+        </svg>`
+      },
+      {
+        id: 'tech-2',
+        topic: 'tech',
+        author: 'Marcus Chen',
+        handle: '@marcus_robotics',
+        avatarText: 'MC',
+        content: 'Our humanoid bipedal platform just completed a 12-hour zero-intervention shift in full sensory darkness. Tactile proprioception and edge vision fusion are finally solved.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#080e1a"/>
+          <path d="M120 160 L160 80 L200 120 L240 60 L280 160" stroke="#00f0ff" stroke-width="3" fill="none"/>
+          <circle cx="240" cy="60" r="9" fill="#00f0ff" filter="drop-shadow(0 0 8px #00f0ff)"/>
+          <rect x="185" y="105" width="30" height="30" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="200" y="125" fill="#00f0ff" font-size="11" font-family="monospace" text-anchor="middle">ROBO-SYNC</text>
+        </svg>`
+      },
+      {
+        id: 'tech-3',
+        topic: 'tech',
+        author: 'Cipher Protocol',
+        handle: '@cipher_lab',
+        avatarText: 'CP',
+        content: 'Zero-knowledge proofs are moving from niche cryptography to the fundamental layer of all web verification. Privacy and verifiable identity can coexist seamlessly.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#08101e"/>
+          <polygon points="200,30 270,70 270,140 200,180 130,140 130,70" stroke="#00f0ff" stroke-width="2" fill="rgba(0, 240, 255, 0.08)"/>
+          <circle cx="200" cy="105" r="22" fill="#00f0ff" opacity="0.3"/>
+          <text x="200" y="110" fill="#fff" font-size="14" font-family="monospace" text-anchor="middle">ZK-SHIELD</text>
+        </svg>`
+      },
+      {
+        id: 'tech-4',
+        topic: 'tech',
+        author: 'Aria Sterling',
+        handle: '@aria_neural',
+        avatarText: 'AS',
+        content: 'Neural lace feedback interfaces can now translate motor cortex intentions into 120 WPM text generation with 99.4% accuracy. The physical keyboard is approaching obsolescence.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#070c18"/>
+          <path d="M50 100 Q120 20 200 100 T350 100" stroke="#38bdf8" stroke-width="3" fill="none"/>
+          <path d="M50 100 Q120 180 200 100 T350 100" stroke="#00f0ff" stroke-width="2" stroke-dasharray="6 3" fill="none"/>
+          <circle cx="200" cy="100" r="14" fill="#00f0ff"/>
+        </svg>`
+      },
+
+      // Environment Posts
+      {
+        id: 'env-1',
+        topic: 'env',
+        author: 'Maya Lin',
+        handle: '@maya_earth',
+        avatarText: 'ML',
+        content: 'Global kelp forest restoration milestone: Over 45,000 hectares of ocean floor rewilded off the Pacific coast. Marine biodiversity has rebounded by 340% in just two seasons.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#061811"/>
+          <path d="M0 160 C100 130 180 180 280 150 C340 130 380 160 400 155 L400 200 L0 200 Z" fill="#064e3b"/>
+          <path d="M120 170 Q110 90 140 40 Q130 100 120 170" fill="#10b981"/>
+          <path d="M220 170 Q240 80 200 30 Q210 100 220 170" fill="#34d399"/>
+          <circle cx="280" cy="60" r="16" fill="#6ee7b7" opacity="0.4"/>
+          <text x="200" y="185" fill="#a7f3d0" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">OCEAN REWILDING 2026</text>
+        </svg>`
+      },
+      {
+        id: 'env-2',
+        topic: 'env',
+        author: 'SolarGrid Project',
+        handle: '@solargrid_global',
+        avatarText: 'SG',
+        content: 'Perovskite-silicon tandem solar cells have broken the 34% lab efficiency ceiling. Rooftop generation will soon produce 3x the daily energy requirement of modern smart homes.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#051c14"/>
+          <circle cx="200" cy="100" r="50" fill="#10b981" opacity="0.2"/>
+          <circle cx="200" cy="100" r="30" fill="#34d399"/>
+          <line x1="200" y1="20" x2="200" y2="180" stroke="#10b981" stroke-width="2"/>
+          <line x1="120" y1="100" x2="280" y2="100" stroke="#10b981" stroke-width="2"/>
+          <text x="200" y="105" fill="#064e3b" font-size="11" font-weight="bold" text-anchor="middle">34.2% EFF</text>
+        </svg>`
+      },
+      {
+        id: 'env-3',
+        topic: 'env',
+        author: 'Ecosystem Alliance',
+        handle: '@eco_alliance',
+        avatarText: 'EA',
+        content: 'Afforestation drones planted 10 million native acacia and oak saplings across degraded arid zones in 30 days. Satellite telemetry confirms a 91% germination survival rate.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#071b12"/>
+          <polygon points="100,150 140,80 180,150" fill="#059669"/>
+          <polygon points="160,150 200,60 240,150" fill="#10b981"/>
+          <polygon points="220,150 260,90 300,150" fill="#34d399"/>
+          <line x1="50" y1="150" x2="350" y2="150" stroke="#047857" stroke-width="3"/>
+        </svg>`
+      },
+      {
+        id: 'env-4',
+        topic: 'env',
+        author: 'HydroLoop Clean',
+        handle: '@hydroloop',
+        avatarText: 'HL',
+        content: 'Autonomous solar-powered river interceptors have successfully collected 20,000 tons of plastic debris before it could enter the ocean gyres. Circular recycling loop initialized.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#061c14"/>
+          <path d="M50 120 Q120 70 200 120 T350 120" stroke="#10b981" stroke-width="4" fill="none"/>
+          <circle cx="200" cy="100" r="25" fill="#34d399" opacity="0.3"/>
+          <text x="200" y="105" fill="#fff" font-size="12" font-family="monospace" text-anchor="middle">HYDRO 0-PLASTIC</text>
+        </svg>`
+      },
+
+      // Fitness Posts
+      {
+        id: 'fit-1',
+        topic: 'fit',
+        author: 'Coach Kai Thorne',
+        handle: '@kai_performance',
+        avatarText: 'KT',
+        content: 'Zone-2 cardiovascular output combined with isometric eccentric loading yields 40% greater mitochondrial density than steady-state cardio alone. Train for cellular longevity.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1f0f08"/>
+          <path d="M40 100 L120 100 L140 40 L160 160 L180 70 L200 120 L220 100 L360 100" stroke="#f97316" stroke-width="3" fill="none" stroke-linejoin="round"/>
+          <circle cx="160" cy="160" r="6" fill="#fb923c"/>
+          <text x="200" y="180" fill="#fdba74" font-size="12" font-family="monospace" text-anchor="middle">ZONE-2 HR PROFILE</text>
+        </svg>`
+      },
+      {
+        id: 'fit-2',
+        topic: 'fit',
+        author: 'Dr. Serena Vance',
+        handle: '@serena_biomarker',
+        avatarText: 'SV',
+        content: 'Continuous lactate biosensors are transforming endurance training. Adjusting cadence the moment lactate crosses 2.1 mmol/L completely eliminates DOMS and preserves glycogen stores.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1a0c06"/>
+          <circle cx="200" cy="100" r="55" stroke="#f97316" stroke-width="3" fill="none" stroke-dasharray="10 5"/>
+          <circle cx="200" cy="100" r="28" fill="#ea580c"/>
+          <text x="200" y="105" fill="#fff" font-size="13" font-family="sans-serif" font-weight="bold" text-anchor="middle">VO2 MAX</text>
+        </svg>`
+      },
+      {
+        id: 'fit-3',
+        topic: 'fit',
+        author: 'Peak Athletics Lab',
+        handle: '@peak_athletics',
+        avatarText: 'PA',
+        content: 'Electrostimulation recovery pods synced with slow-wave sleep cycles show an 85% acceleration in myofibrillar protein synthesis. Rest is the ultimate training variable.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1c0e07"/>
+          <line x1="80" y1="120" x2="320" y2="120" stroke="#7c2d12" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="110" cy="120" r="25" fill="#f97316"/>
+          <circle cx="290" cy="120" r="25" fill="#f97316"/>
+          <text x="200" y="80" fill="#fed7aa" font-size="14" font-weight="bold" font-family="monospace" text-anchor="middle">HYPERTROPHY +34%</text>
+        </svg>`
+      },
+      {
+        id: 'fit-4',
+        topic: 'fit',
+        author: 'Nadia Solis',
+        handle: '@nadia_mobility',
+        avatarText: 'NS',
+        content: 'Fascial tension remodeling through multidirectional loaded stretching creates joint resilience that standard linear barbell movements miss entirely.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#190d06"/>
+          <circle cx="150" cy="100" r="40" stroke="#f97316" stroke-width="2" fill="none"/>
+          <circle cx="250" cy="100" r="40" stroke="#ea580c" stroke-width="2" fill="none"/>
+          <path d="M150 100 Q200 40 250 100 Q200 160 150 100" fill="rgba(249, 115, 22, 0.2)"/>
+        </svg>`
+      },
+
+      // Travel Posts
+      {
+        id: 'travel-1',
+        topic: 'travel',
+        author: 'Tarek Al-Mansoor',
+        handle: '@tarek_expeditions',
+        avatarText: 'TM',
+        content: 'Witnessed the midnight solar halo above the Lofoten archipelago in Norway. When the sun skims the Arctic horizon without setting, time simply dissolves into pure light.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#120c24"/>
+          <polygon points="60,170 140,60 220,170" fill="#4c1d95"/>
+          <polygon points="180,170 270,40 360,170" fill="#6d28d9"/>
+          <circle cx="200" cy="70" r="22" fill="#c084fc" opacity="0.6" filter="drop-shadow(0 0 12px #a855f7)"/>
+          <path d="M0 170 L400 170 L400 200 L0 200 Z" fill="#2e1065"/>
+        </svg>`
+      },
+      {
+        id: 'travel-2',
+        topic: 'travel',
+        author: 'Chloe Nomad',
+        handle: '@chloe_unmapped',
+        avatarText: 'CN',
+        content: 'Living off-grid in the high valleys of Bhutan for the past month. Carbon-negative lifestyle, pristine glacial streams, and ancient monasteries perched among the clouds.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#150e2b"/>
+          <path d="M40 150 Q100 80 180 140 T320 110 T380 160" stroke="#a855f7" stroke-width="3" fill="none"/>
+          <circle cx="320" cy="60" r="16" fill="#e9d5ff"/>
+          <text x="200" y="175" fill="#d8b4fe" font-size="12" font-family="sans-serif" text-anchor="middle">HIMALAYAN TRAIL 4200m</text>
+        </svg>`
+      },
+      {
+        id: 'travel-3',
+        topic: 'travel',
+        author: 'Zenith Voyagers',
+        handle: '@zenith_voyage',
+        avatarText: 'ZV',
+        content: 'Diving the volcanic geothermal vents in the Azores. Water clarity of 60 meters with subterranean thermal pillars emitting neon bioluminescent hydrothermal life.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#0d091e"/>
+          <circle cx="200" cy="100" r="60" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
+          <circle cx="200" cy="100" r="40" fill="none" stroke="#c084fc" stroke-width="2"/>
+          <circle cx="200" cy="100" r="15" fill="#a855f7"/>
+          <text x="200" y="180" fill="#e9d5ff" font-size="11" font-family="monospace" text-anchor="middle">AZORES 38°N 28°W</text>
+        </svg>`
+      },
+      {
+        id: 'travel-4',
+        topic: 'travel',
+        author: 'Julian Croft',
+        handle: '@julian_routes',
+        avatarText: 'JC',
+        content: 'Crossing the salt flats of Salar de Uyuni under a moonless sky. The mirror reflection of the Milky Way across the infinite white crust creates the illusion of walking in deep space.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#0b081a"/>
+          <line x1="0" y1="110" x2="400" y2="110" stroke="#8b5cf6" stroke-width="1.5"/>
+          <circle cx="100" cy="50" r="2" fill="#fff"/>
+          <circle cx="250" cy="30" r="3" fill="#c084fc"/>
+          <circle cx="320" cy="80" r="2" fill="#fff"/>
+          <path d="M0 110 L400 110 L400 200 L0 200 Z" fill="#1e1338"/>
+        </svg>`
+      },
+
+      // Entertainment Posts
+      {
+        id: 'ent-1',
+        topic: 'ent',
+        author: 'Neon Canvas Studio',
+        handle: '@neon_canvas',
+        avatarText: 'NC',
+        content: 'Premiering our interactive VR holographic cinema experience at the Tokyo Media Biennial. Viewers inhabit the soundwave frequencies as the physical architecture shifts around them.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#200a18"/>
+          <circle cx="200" cy="100" r="50" fill="none" stroke="#ec4899" stroke-width="4"/>
+          <line x1="80" y1="100" x2="320" y2="100" stroke="#f43f5e" stroke-width="2"/>
+          <polygon points="190,85 220,100 190,115" fill="#ec4899"/>
+          <text x="200" y="175" fill="#fbcfe8" font-size="12" font-family="monospace" text-anchor="middle">HOLO-SOUNDSTAGE</text>
+        </svg>`
+      },
+      {
+        id: 'ent-2',
+        topic: 'ent',
+        author: 'Pixel Syndicate',
+        handle: '@pixel_syn',
+        avatarText: 'PS',
+        content: 'Procedural neural physics engines are rendering 60 FPS fully destructible voxel worlds in web browsers. Indie game developers now have the production power of 500-person studios.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1a0814"/>
+          <rect x="140" y="60" width="30" height="30" fill="#ec4899"/>
+          <rect x="180" y="60" width="30" height="30" fill="#f43f5e"/>
+          <rect x="220" y="60" width="30" height="30" fill="#fb7185"/>
+          <rect x="160" y="100" width="30" height="30" fill="#ec4899"/>
+          <rect x="200" y="100" width="30" height="30" fill="#db2777"/>
+          <text x="200" y="160" fill="#fff" font-size="11" font-family="monospace" text-anchor="middle">VOXEL ENGINE 4K</text>
+        </svg>`
+      },
+      {
+        id: 'ent-3',
+        topic: 'ent',
+        author: 'Synthwave Society',
+        handle: '@synthwave_now',
+        avatarText: 'SS',
+        content: 'Analog tape warmth blended with hyperpop spatial audio. Our newest album was mastered entirely on 1984 Japanese reel-to-reel magnetic hardware.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#240b1b"/>
+          <circle cx="140" cy="100" r="35" stroke="#ec4899" stroke-width="3" fill="none"/>
+          <circle cx="260" cy="100" r="35" stroke="#ec4899" stroke-width="3" fill="none"/>
+          <line x1="140" y1="65" x2="260" y2="65" stroke="#f43f5e" stroke-width="3"/>
+          <line x1="140" y1="135" x2="260" y2="135" stroke="#f43f5e" stroke-width="3"/>
+        </svg>`
+      },
+      {
+        id: 'ent-4',
+        topic: 'ent',
+        author: 'Mira Kazantsev',
+        handle: '@mira_generative',
+        avatarText: 'MK',
+        content: 'Real-time generative score reacting to player heart rate variability in our new interactive psychological thriller. No two players will ever hear the same composition.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1c0716"/>
+          <path d="M60 100 Q130 30 200 100 T340 100" stroke="#ec4899" stroke-width="3" fill="none"/>
+          <path d="M60 100 Q130 170 200 100 T340 100" stroke="#f43f5e" stroke-width="2" fill="none"/>
+        </svg>`
+      },
+
+      // Finance Posts
+      {
+        id: 'fin-1',
+        topic: 'fin',
+        author: 'Astrid Lindholm',
+        handle: '@astrid_macro',
+        avatarText: 'AL',
+        content: 'Algorithmic sovereign bond yield inversion has settled into equilibrium. Liquidity spreads indicate institutional capital is rotating heavily into clean-tech infrastructure funds.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1a1406"/>
+          <path d="M60 150 L130 110 L200 130 L270 70 L340 40" stroke="#eab308" stroke-width="3" fill="none"/>
+          <circle cx="340" cy="40" r="6" fill="#fde047" filter="drop-shadow(0 0 8px #eab308)"/>
+          <line x1="60" y1="160" x2="340" y2="160" stroke="#854d0e" stroke-width="1.5"/>
+          <text x="200" y="180" fill="#fef08a" font-size="12" font-family="monospace" text-anchor="middle">ALPHA SPREAD +4.8%</text>
+        </svg>`
+      },
+      {
+        id: 'fin-2',
+        topic: 'fin',
+        author: 'Venture Pulse',
+        handle: '@venture_pulse',
+        avatarText: 'VP',
+        content: 'Seed funding for decentralized compute clusters grew 280% QoQ. Compute is rapidly becoming the standard collateral currency of the 21st century digital economy.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#191305"/>
+          <rect x="80" y="120" width="40" height="40" fill="#ca8a04"/>
+          <rect x="140" y="90" width="40" height="70" fill="#eab308"/>
+          <rect x="200" y="60" width="40" height="100" fill="#facc15"/>
+          <rect x="260" y="30" width="40" height="130" fill="#fde047"/>
+          <text x="200" y="180" fill="#fef9c3" font-size="11" font-family="monospace" text-anchor="middle">CAPITAL INFLOW 2026</text>
+        </svg>`
+      },
+      {
+        id: 'fin-3',
+        topic: 'fin',
+        author: 'Nexus Quantitative',
+        handle: '@nexus_quant',
+        avatarText: 'NQ',
+        content: 'High-frequency latency arbitrage across decentralized cross-chain orderbooks is tightening spreads to sub-millisecond precision. Automated liquidity provisioning is at all-time highs.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#1c1607"/>
+          <polygon points="200,40 280,140 120,140" stroke="#eab308" stroke-width="2" fill="none"/>
+          <circle cx="200" cy="95" r="14" fill="#facc15"/>
+          <text x="200" y="175" fill="#fef08a" font-size="12" font-family="monospace" text-anchor="middle">ORDERBOOK DEPTH</text>
+        </svg>`
+      },
+      {
+        id: 'fin-4',
+        topic: 'fin',
+        author: 'FinTech Horizons',
+        handle: '@fintech_horizon',
+        avatarText: 'FH',
+        content: 'Tokenized commercial real estate yields are offering 8.4% APY with instant T+0 settlement. Friction in physical asset liquidity is permanently evaporating.',
+        svg: `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#181205"/>
+          <circle cx="200" cy="100" r="45" stroke="#eab308" stroke-width="2" fill="none"/>
+          <line x1="155" y1="100" x2="245" y2="100" stroke="#facc15" stroke-width="2"/>
+          <text x="200" y="165" fill="#fde047" font-size="11" font-family="monospace" text-anchor="middle">T+0 REALTIME SETTLE</text>
+        </svg>`
+      }
+    ];
+
+    // --- State Management ---
+    const state = {
+      currentScreen: 'screen-intro',
+      selectedInitialTopics: [],
+      topicWeights: {
+        tech: 2.0,
+        env: 2.0,
+        fit: 2.0,
+        travel: 2.0,
+        ent: 2.0,
+        fin: 2.0
+      },
+      initialDistribution: {},
+      interactionCount: 0,
+      maxInteractions: 12,
+      history: {
+        likes: 0,
+        shares: 0,
+        skips: 0,
+        perTopicActions: {
+          tech: 0,
+          env: 0,
+          fit: 0,
+          travel: 0,
+          ent: 0,
+          fin: 0
+        }
+      },
+      currentPost: null,
+      recentPostIds: [],
+      stage: 1
+    };
+
+    // --- Mathematical Recommendation Engine ---
+    class RecommendationEngine {
+      static calculateProbabilities(weights) {
+        const gamma = 1.35; // Amplification factor modeling nonlinear softmax ranking
+        const amplified = {};
+        let sum = 0;
+
+        for (const topic in weights) {
+          const val = Math.pow(Math.max(0.2, weights[topic]), gamma);
+          amplified[topic] = val;
+          sum += val;
+        }
+
+        const probs = {};
+        for (const topic in amplified) {
+          probs[topic] = sum > 0 ? (amplified[topic] / sum) : (1 / 6);
+        }
+        return probs;
+      }
+
+      static calculateEntropy(probs) {
+        const k = 6;
+        let h = 0;
+        for (const topic in probs) {
+          const p = probs[topic];
+          if (p > 0.0001) {
+            h += - (p * (Math.log(p) / Math.log(k)));
+          }
+        }
+        return Math.max(0, Math.min(1, h));
+      }
+
+      static calculateMetrics(weights, interactionCount) {
+        const probs = this.calculateProbabilities(weights);
+        const entropy = this.calculateEntropy(probs);
+        
+        const diversity = Math.round(entropy * 100);
+        const maxProb = Math.max(...Object.values(probs));
+        const personalization = Math.round(Math.min(99, Math.max(10, (1 - entropy) * 100 + (maxProb * 20))));
+        const confidence = Math.round(Math.min(99, (1 - Math.exp(-0.24 * (interactionCount + 1))) * 100));
+
+        let risk = 'LOW';
+        if (maxProb > 0.65 || (interactionCount >= 8 && maxProb > 0.55)) {
+          risk = 'ECHO CHAMBER';
+        } else if (maxProb > 0.45) {
+          risk = 'HIGH';
+        } else if (maxProb > 0.30) {
+          risk = 'MODERATE';
+        }
+
+        return {
+          probs,
+          diversity,
+          personalization,
+          confidence,
+          risk
+        };
+      }
+
+      static selectNextPost(probs, recentIds) {
+        const rand = Math.random();
+        let cumulative = 0;
+        let chosenTopic = 'tech';
+
+        for (const topic in probs) {
+          cumulative += probs[topic];
+          if (rand <= cumulative) {
+            chosenTopic = topic;
+            break;
+          }
+        }
+
+        const candidates = POSTS_DATABASE.filter(p => p.topic === chosenTopic);
+        let validPosts = candidates.filter(p => !recentIds.includes(p.id));
+        if (validPosts.length === 0) validPosts = candidates;
+
+        const randomPost = validPosts[Math.floor(Math.random() * validPosts.length)];
+        return randomPost || POSTS_DATABASE[0];
+      }
+    }
+
+    // --- Particle Canvas Background System ---
+    class ParticleCanvas {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.numParticles = 55;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+
+        this.init();
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      init() {
+        this.resize();
+        this.particles = [];
+        for (let i = 0; i < this.numParticles; i++) {
+          this.particles.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            size: Math.random() * 2 + 1,
+            color: ['#00f0ff', '#8b5cf6', '#ec4899', '#10b981', '#f97316'][Math.floor(Math.random() * 5)],
+            opacity: Math.random() * 0.5 + 0.2
+          });
+        }
+        this.animate();
+      }
+
+      resize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = this.width;
+          if (p.x > this.width) p.x = 0;
+          if (p.y < 0) p.y = this.height;
+          if (p.y > this.height) p.y = 0;
+
+          this.ctx.beginPath();
+          this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = p.opacity;
+          this.ctx.fill();
+
+          for (let j = i + 1; j < this.particles.length; j++) {
+            const p2 = this.particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 110) {
+              this.ctx.beginPath();
+              this.ctx.moveTo(p.x, p.y);
+              this.ctx.lineTo(p2.x, p2.y);
+              this.ctx.strokeStyle = p.color;
+              this.ctx.globalAlpha = (1 - dist / 110) * 0.15;
+              this.ctx.lineWidth = 0.8;
+              this.ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    // --- Neural Canvas Topology Visualizer (Left Panel) ---
+    class NeuralNetworkVisualizer {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.angle = 0;
+        this.pulses = [];
+
+        this.init();
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      init() {
+        this.resize();
+        this.animate();
+      }
+
+      resize() {
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.canvas.width = rect.width * (window.devicePixelRatio || 1) || 300;
+        this.canvas.height = rect.height * (window.devicePixelRatio || 1) || 260;
+      }
+
+      triggerPulse(topicId) {
+        this.pulses.push({
+          topicId,
+          progress: 0,
+          max: 1
+        });
+      }
+
+      animate() {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const ctx = this.ctx;
+        const dpr = window.devicePixelRatio || 1;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const centerX = w / 2;
+        const centerY = h / 2;
+        const radius = Math.min(w, h) * 0.35;
+
+        this.angle += 0.007;
+
+        const topicKeys = Object.keys(TOPICS);
+        const nodePositions = {};
+
+        topicKeys.forEach((key, index) => {
+          const theta = (index / topicKeys.length) * Math.PI * 2 + this.angle;
+          const nx = centerX + Math.cos(theta) * radius;
+          const ny = centerY + Math.sin(theta) * (radius * 0.82);
+          nodePositions[key] = { x: nx, y: ny };
+        });
+
+        // Connections between nodes
+        ctx.lineWidth = 1 * dpr;
+        topicKeys.forEach((k1, i) => {
+          topicKeys.forEach((k2, j) => {
+            if (i < j) {
+              const p1 = nodePositions[k1];
+              const p2 = nodePositions[k2];
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+              ctx.stroke();
+            }
+          });
+        });
+
+        // Center hub
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 16 * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
+        ctx.fill();
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.5 * dpr;
+        ctx.stroke();
+
+        const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+
+        // Topic nodes
+        topicKeys.forEach(key => {
+          const pos = nodePositions[key];
+          const topic = TOPICS[key];
+          const p = probs[key] || 0.16;
+
+          const nodeRadius = (9 + p * 42) * dpr;
+
+          ctx.save();
+          ctx.shadowColor = topic.color;
+          ctx.shadowBlur = 12 * dpr;
+
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI * 2);
+          ctx.fillStyle = topic.color;
+          ctx.globalAlpha = 0.85;
+          ctx.fill();
+          ctx.restore();
+
+          // Outer ring
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, nodeRadius + (4 * dpr), 0, Math.PI * 2);
+          ctx.strokeStyle = topic.color;
+          ctx.globalAlpha = 0.4;
+          ctx.stroke();
+        });
+
+        // Animate pulses
+        for (let i = this.pulses.length - 1; i >= 0; i--) {
+          const pulse = this.pulses[i];
+          pulse.progress += 0.04;
+
+          const targetPos = nodePositions[pulse.topicId];
+          if (targetPos) {
+            const px = centerX + (targetPos.x - centerX) * pulse.progress;
+            const py = centerY + (targetPos.y - centerY) * pulse.progress;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 6 * dpr, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 10 * dpr;
+            ctx.fill();
+          }
+
+          if (pulse.progress >= 1) {
+            this.pulses.splice(i, 1);
+          }
+        }
+
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    let neuralViz = null;
+
+    // --- Screen View Switcher ---
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(el => {
+        el.classList.remove('active');
+      });
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+        state.currentScreen = screenId;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const stageBadge = document.getElementById('header-stage-badge');
+      if (screenId === 'screen-dashboard') {
+        stageBadge.style.display = 'inline-flex';
+        if (neuralViz) neuralViz.resize();
+      } else {
+        stageBadge.style.display = 'none';
+      }
+    }
+
+    // --- Selection UI Management ---
+    function initSelectionUI() {
+      const cards = document.querySelectorAll('.topic-card');
+      const startBtn = document.getElementById('btn-start-feed');
+      const countBadge = document.getElementById('selected-count-badge');
+
+      cards.forEach(card => {
+        const toggle = () => {
+          const topic = card.getAttribute('data-topic');
+          const isSelected = state.selectedInitialTopics.includes(topic);
+
+          if (isSelected) {
+            state.selectedInitialTopics = state.selectedInitialTopics.filter(t => t !== topic);
+            card.classList.remove('selected');
+            card.setAttribute('aria-checked', 'false');
+            sound.playSkip();
+          } else {
+            if (state.selectedInitialTopics.length < 3) {
+              state.selectedInitialTopics.push(topic);
+              card.classList.add('selected');
+              card.setAttribute('aria-checked', 'true');
+              sound.playLike();
+            }
+          }
+
+          countBadge.textContent = `${state.selectedInitialTopics.length} / 3`;
+
+          if (state.selectedInitialTopics.length === 3) {
+            startBtn.disabled = false;
+            startBtn.style.opacity = '1';
+            startBtn.style.pointerEvents = 'auto';
+          } else {
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.5';
+            startBtn.style.pointerEvents = 'none';
+          }
+        };
+
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
+
+      startBtn.addEventListener('click', () => {
+        sound.init();
+        sound.playStageUp();
+        setupSimulationFromSelection();
+        switchScreen('screen-dashboard');
+      });
+    }
+
+    // --- Setup State After Selection ---
+    function setupSimulationFromSelection() {
+      Object.keys(TOPICS).forEach(t => {
+        if (state.selectedInitialTopics.includes(t)) {
+          state.topicWeights[t] = 10.0;
+        } else {
+          state.topicWeights[t] = 1.5;
+        }
+      });
+
+      state.initialDistribution = RecommendationEngine.calculateProbabilities(state.topicWeights);
+      state.interactionCount = 0;
+      state.stage = 1;
+
+      renderTopicWeightsList();
+      updateTelemetryMeters();
+      loadNextPost();
+    }
+
+    // --- Render Weights in Algorithm Mind Panel ---
+    function renderTopicWeightsList() {
+      const container = document.getElementById('topic-weights-container');
+      const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+
+      let html = '';
+      Object.keys(TOPICS).forEach(key => {
+        const topic = TOPICS[key];
+        const pct = Math.round((probs[key] || 0) * 100);
+
+        html += `
+          <div class="topic-weight-row" style="--topic-color: ${topic.color};">
+            <div class="topic-weight-meta">
+              <div class="topic-weight-label">
+                <span class="topic-dot"></span>
+                <span>${topic.name}</span>
+              </div>
+              <span class="topic-weight-pct">${pct}% prob</span>
+            </div>
+            <div class="weight-progress-track">
+              <div class="weight-progress-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // --- Telemetry Dashboard & Meters Updater ---
+    function updateTelemetryMeters() {
+      const metrics = RecommendationEngine.calculateMetrics(state.topicWeights, state.interactionCount);
+
+      document.getElementById('metric-personalization-val').textContent = `${metrics.personalization}%`;
+      document.getElementById('meter-personalization-fill').style.width = `${metrics.personalization}%`;
+
+      document.getElementById('metric-diversity-val').textContent = `${metrics.diversity}%`;
+      document.getElementById('meter-diversity-fill').style.width = `${metrics.diversity}%`;
+      
+      const diversityFill = document.getElementById('meter-diversity-fill');
+      if (metrics.diversity > 60) {
+        diversityFill.style.backgroundColor = 'var(--color-env)';
+      } else if (metrics.diversity > 35) {
+        diversityFill.style.backgroundColor = 'var(--color-fin)';
+      } else {
+        diversityFill.style.backgroundColor = '#ef4444';
+      }
+
+      document.getElementById('metric-confidence-val').textContent = `${metrics.confidence}%`;
+      document.getElementById('meter-confidence-fill').style.width = `${metrics.confidence}%`;
+
+      const riskBadge = document.getElementById('metric-risk-badge');
+      const riskFill = document.getElementById('meter-risk-fill');
+      riskBadge.className = 'risk-badge';
+
+      if (metrics.risk === 'ECHO CHAMBER') {
+        riskBadge.classList.add('risk-echo');
+        riskBadge.textContent = 'Echo Chamber';
+        riskFill.style.backgroundColor = '#ef4444';
+        riskFill.style.width = '100%';
+      } else if (metrics.risk === 'HIGH') {
+        riskBadge.classList.add('risk-high');
+        riskBadge.textContent = 'High Risk';
+        riskFill.style.backgroundColor = '#f97316';
+        riskFill.style.width = '75%';
+      } else if (metrics.risk === 'MODERATE') {
+        riskBadge.classList.add('risk-moderate');
+        riskBadge.textContent = 'Moderate';
+        riskFill.style.backgroundColor = '#eab308';
+        riskFill.style.width = '45%';
+      } else {
+        riskBadge.classList.add('risk-low');
+        riskBadge.textContent = 'Low';
+        riskFill.style.backgroundColor = '#10b981';
+        riskFill.style.width = '20%';
+      }
+
+      const spectrumBar = document.getElementById('diversity-spectrum-bar');
+      let spectrumHtml = '';
+      Object.keys(TOPICS).forEach(key => {
+        const pct = (metrics.probs[key] * 100).toFixed(1);
+        if (pct > 0.5) {
+          spectrumHtml += `<div class="spectrum-segment" style="width: ${pct}%; background: ${TOPICS[key].color};" title="${TOPICS[key].name}: ${pct}%"></div>`;
+        }
+      });
+      spectrumBar.innerHTML = spectrumHtml;
+
+      const prevStage = state.stage;
+      if (state.interactionCount < 4) {
+        state.stage = 1;
+      } else if (state.interactionCount < 8) {
+        state.stage = 2;
+      } else {
+        state.stage = 3;
+      }
+
+      const stageLabels = {
+        1: 'Stage 1: Exploration',
+        2: 'Stage 2: Pattern Learning',
+        3: 'Stage 3: Echo Chamber Lock'
+      };
+
+      document.getElementById('current-stage-name').textContent = stageLabels[state.stage];
+      document.getElementById('stage-banner-tag').textContent = stageLabels[state.stage];
+      document.getElementById('interaction-step-counter').textContent = `Interaction ${state.interactionCount} / ${state.maxInteractions}`;
+
+      if (state.stage !== prevStage) {
+        sound.playStageUp();
+      }
+    }
+
+    // --- Load Next Post ---
+    function loadNextPost() {
+      const probs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+      const post = RecommendationEngine.selectNextPost(probs, state.recentPostIds);
+
+      state.currentPost = post;
+      state.recentPostIds.push(post.id);
+      if (state.recentPostIds.length > 5) state.recentPostIds.shift();
+
+      const topicMeta = TOPICS[post.topic];
+      const card = document.getElementById('active-post-card');
+
+      card.style.setProperty('--card-topic-color', topicMeta.color);
+      card.style.setProperty('--card-topic-glow', topicMeta.glow);
+
+      document.getElementById('card-author-avatar').textContent = post.avatarText;
+      document.getElementById('card-author-name').textContent = post.author;
+      document.getElementById('card-author-handle').textContent = post.handle;
+      document.getElementById('card-topic-badge').textContent = topicMeta.name;
+      document.getElementById('card-text-content').textContent = post.content;
+      document.getElementById('card-visual-slot').innerHTML = post.svg;
+    }
+
+    // --- Spawn Action Particle Flying to Algorithm Mind ---
+    function spawnActionParticle(fromElement, topicId) {
+      if (!fromElement) return;
+      const rect = fromElement.getBoundingClientRect();
+      const targetCanvas = document.getElementById('neural-canvas');
+      const targetRect = targetCanvas.getBoundingClientRect();
+
+      const packet = document.createElement('div');
+      packet.className = 'flying-packet';
+      packet.style.left = `${rect.left + rect.width / 2}px`;
+      packet.style.top = `${rect.top}px`;
+      packet.style.color = TOPICS[topicId].color;
+      packet.style.backgroundColor = TOPICS[topicId].color;
+      document.body.appendChild(packet);
+
+      setTimeout(() => {
+        packet.style.transform = `translate(${targetRect.left + targetRect.width / 2 - (rect.left + rect.width / 2)}px, ${targetRect.top + targetRect.height / 2 - rect.top}px) scale(0.4)`;
+        packet.style.opacity = '0.2';
+      }, 20);
+
+      setTimeout(() => {
+        if (packet.parentNode) packet.parentNode.removeChild(packet);
+        if (neuralViz) neuralViz.triggerPulse(topicId);
+      }, 640);
+    }
+
+    // --- Action Handlers ---
+    function handleInteraction(actionType, btnElement) {
+      if (!state.currentPost) return;
+
+      const topic = state.currentPost.topic;
+      const topicName = TOPICS[topic].name;
+
+      if (actionType === 'like') {
+        state.topicWeights[topic] += 2.0;
+        state.history.likes++;
+        sound.playLike();
+        const curProbs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+        const curPct = Math.round(curProbs[topic] * 100);
+        updateNarrative(`Liked ${topicName}. Neural weight increased by +2. ${topicName} is now ${curPct}% likely to appear.`);
+      } else if (actionType === 'share') {
+        state.topicWeights[topic] += 3.5;
+        state.history.shares++;
+        sound.playShare();
+        const curProbs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+        const curPct = Math.round(curProbs[topic] * 100);
+        updateNarrative(`Shared ${topicName} (+3.5). Strong viral affinity vector assigned. ${topicName} probability jumped to ${curPct}%.`);
+      } else if (actionType === 'skip') {
+        state.topicWeights[topic] = Math.max(0.5, state.topicWeights[topic] - 1.2);
+        state.history.skips++;
+        sound.playSkip();
+        const curProbs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+        const curPct = Math.round(curProbs[topic] * 100);
+        updateNarrative(`Skipped ${topicName} (-1.2). Dampened category priority in queue to ${curPct}%.`);
+      }
+
+      state.history.perTopicActions[topic]++;
+      state.interactionCount++;
+
+      spawnActionParticle(btnElement, topic);
+      renderTopicWeightsList();
+      updateTelemetryMeters();
+
+      const card = document.getElementById('active-post-card');
+      card.style.transform = actionType === 'skip' ? 'translateX(30px) opacity(0)' : 'scale(0.98)';
+      
+      setTimeout(() => {
+        card.style.transform = 'none';
+        loadNextPost();
+      }, 200);
+
+      if (state.interactionCount >= state.maxInteractions) {
+        setTimeout(() => {
+          triggerFinalReveal();
+        }, 600);
+      }
+    }
+
+    function updateNarrative(msg) {
+      const textEl = document.getElementById('narrative-stream-text');
+      textEl.style.opacity = '0';
+      setTimeout(() => {
+        textEl.textContent = msg;
+        textEl.style.opacity = '1';
+      }, 150);
+    }
+
+    // --- Final Reveal Screen Construction ---
+    function triggerFinalReveal() {
+      const finalProbs = RecommendationEngine.calculateProbabilities(state.topicWeights);
+      const metrics = RecommendationEngine.calculateMetrics(state.topicWeights, state.interactionCount);
+
+      // Render Before Bars
+      const beforeContainer = document.getElementById('reveal-dist-before');
+      let beforeHtml = '';
+      Object.keys(TOPICS).forEach(key => {
+        const p = Math.round((state.initialDistribution[key] || 0) * 100);
+        beforeHtml += `
+          <div class="comp-bar-item" style="--bar-color: ${TOPICS[key].color};">
+            <div class="comp-bar-label-row">
+              <span style="color: #cbd5e1;">${TOPICS[key].name}</span>
+              <span style="font-family: var(--font-mono); font-weight: 700;">${p}%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden;">
+              <div class="comp-bar-fill" style="width: ${p}%;"></div>
+            </div>
+          </div>
+        `;
+      });
+      beforeContainer.innerHTML = beforeHtml;
+
+      // Render After Bars
+      const afterContainer = document.getElementById('reveal-dist-after');
+      let afterHtml = '';
+      let dominantKey = 'tech';
+      let maxProbVal = -1;
+      const vanishedList = [];
+
+      Object.keys(TOPICS).forEach(key => {
+        const p = Math.round((finalProbs[key] || 0) * 100);
+        if (p > maxProbVal) {
+          maxProbVal = p;
+          dominantKey = key;
+        }
+        if (p <= 6) {
+          vanishedList.push(TOPICS[key].name);
+        }
+
+        afterHtml += `
+          <div class="comp-bar-item" style="--bar-color: ${TOPICS[key].color};">
+            <div class="comp-bar-label-row">
+              <span style="color: #cbd5e1;">${TOPICS[key].name}</span>
+              <span style="font-family: var(--font-mono); font-weight: 700;">${p}%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden;">
+              <div class="comp-bar-fill" style="width: ${p}%;"></div>
+            </div>
+          </div>
+        `;
+      });
+      afterContainer.innerHTML = afterHtml;
+
+      // Fill Telemetry stats
+      document.getElementById('reveal-stat-actions').textContent = `${state.interactionCount} (${state.history.likes} Likes, ${state.history.shares} Shares, ${state.history.skips} Skips)`;
+      document.getElementById('reveal-stat-diversity').textContent = `${metrics.diversity}% (Started at 100%)`;
+      document.getElementById('reveal-stat-dominant').textContent = `${TOPICS[dominantKey].name} (${maxProbVal}%)`;
+      document.getElementById('reveal-stat-dominant').style.color = TOPICS[dominantKey].color;
+      document.getElementById('reveal-stat-vanished').textContent = vanishedList.length > 0 ? vanishedList.join(', ') : 'None fully extinguished';
+
+      // Update Risk Tag in reveal
+      const revealRiskTag = document.getElementById('reveal-risk-tag');
+      revealRiskTag.className = 'risk-badge';
+      if (metrics.risk === 'ECHO CHAMBER') {
+        revealRiskTag.classList.add('risk-echo');
+        revealRiskTag.textContent = 'Echo Chamber Confirmed';
+      } else {
+        revealRiskTag.classList.add('risk-high');
+        revealRiskTag.textContent = `${metrics.risk} Risk Profile`;
+      }
+
+      sound.playStageUp();
+      switchScreen('screen-reveal');
+    }
+
+    // --- Break The Bubble Feature ---
+    function breakTheBubble() {
+      sound.playBreakBubble();
+
+      // Equalize all topic weights back to full diversity
+      Object.keys(TOPICS).forEach(k => {
+        state.topicWeights[k] = 10.0;
+      });
+
+      state.stage = 1;
+      state.interactionCount = 0;
+
+      renderTopicWeightsList();
+      updateTelemetryMeters();
+      updateNarrative('⚡ Bubble Disrupted: Intentionally seeking diverse topics reshaped the recommendation matrix back to 100% diversity.');
+
+      switchScreen('screen-dashboard');
+    }
+
+    // --- Reset Simulation ---
+    function resetSimulation() {
+      state.selectedInitialTopics = [];
+      state.topicWeights = { tech: 2, env: 2, fit: 2, travel: 2, ent: 2, fin: 2 };
+      state.interactionCount = 0;
+      state.history = {
+        likes: 0,
+        shares: 0,
+        skips: 0,
+        perTopicActions: { tech: 0, env: 0, fit: 0, travel: 0, ent: 0, fin: 0 }
+      };
+      state.recentPostIds = [];
+      state.stage = 1;
+
+      document.querySelectorAll('.topic-card').forEach(card => {
+        card.classList.remove('selected');
+        card.setAttribute('aria-checked', 'false');
+      });
+      document.getElementById('selected-count-badge').textContent = '0 / 3';
+      const startBtn = document.getElementById('btn-start-feed');
+      startBtn.disabled = true;
+      startBtn.style.opacity = '0.5';
+      startBtn.style.pointerEvents = 'none';
+
+      switchScreen('screen-selection');
+    }
+
+    // --- Wire All DOM Event Listeners ---
+    function initEvents() {
+      document.getElementById('btn-enter-feed').addEventListener('click', () => {
+        sound.init();
+        sound.playLike();
+        switchScreen('screen-selection');
+      });
+
+      const soundBtn = document.getElementById('sound-toggle-btn');
+      const soundLabel = document.getElementById('sound-label');
+      soundBtn.addEventListener('click', () => {
+        sound.init();
+        sound.enabled = !sound.enabled;
+        soundLabel.textContent = sound.enabled ? 'Audio ON' : 'Audio OFF';
+        soundBtn.style.color = sound.enabled ? 'var(--text-primary)' : 'var(--text-muted)';
+      });
+
+      document.getElementById('reset-sim-btn').addEventListener('click', resetSimulation);
+
+      const btnLike = document.getElementById('btn-action-like');
+      const btnShare = document.getElementById('btn-action-share');
+      const btnSkip = document.getElementById('btn-action-skip');
+
+      btnLike.addEventListener('click', () => handleInteraction('like', btnLike));
+      btnShare.addEventListener('click', () => handleInteraction('share', btnShare));
+      btnSkip.addEventListener('click', () => handleInteraction('skip', btnSkip));
+
+      document.getElementById('btn-manual-reveal').addEventListener('click', triggerFinalReveal);
+      document.getElementById('btn-break-bubble').addEventListener('click', breakTheBubble);
+      document.getElementById('btn-try-again').addEventListener('click', resetSimulation);
+
+      window.addEventListener('keydown', (e) => {
+        if (state.currentScreen !== 'screen-dashboard') return;
+        const key = e.key.toLowerCase();
+        if (key === 'l') {
+          handleInteraction('like', btnLike);
+        } else if (key === 's') {
+          handleInteraction('share', btnShare);
+        } else if (key === 'k') {
+          handleInteraction('skip', btnSkip);
+        }
+      });
+    }
+
+    // --- App Bootstrap ---
+    window.addEventListener('DOMContentLoaded', () => {
+      new ParticleCanvas('bg-canvas');
+      neuralViz = new NeuralNetworkVisualizer('neural-canvas');
+      initSelectionUI();
+      initEvents();
+    });
+  </script>
+</body>
+</html>
