@@ -1,70 +1,154 @@
 # INSIDE THE FEED
 
-> **“You choose the clicks. The algorithm shapes your world.”**
+**Visualizing the Invisible — Social Media Recommendation Algorithms**
 
-An interactive, real-time simulation that makes the invisible dynamics of social media recommendation algorithms visible.
+> You see content. The system sees signals.
 
-![Inside The Feed Preview](https://raw.githubusercontent.com/pranesh-2601/inside-the-feed/main/preview.png)
+**Inside The Feed** is an interactive web experience that makes the hidden feedback loop behind social media recommendations visible. Users interact with a simulated feed, while the system continuously updates topic weights, recommendation probabilities, diversity, personalization, confidence, and filter-bubble risk.
 
----
+### Live Demo
 
-## 🌟 Overview
+**https://inside-the-feed.vercel.app/**
 
-Recommendation algorithms optimize for predicted retention and engagement rather than intellectual diversity. **Inside The Feed** demonstrates this phenomenon through a hands-on, live-updating feedback loop:
+### Source Code
 
-1. **Baseline Interest Calibration**: Select 3 initial topics (Technology, Environment, Fitness, Travel, Entertainment, Finance).
-2. **Interactive Feed Engine**: Like (+2 pts), Share (+3 pts), or Skip (-1 pt) dynamic posts.
-3. **Algorithm Mind Visualization**: Watch neural node orbitals expand, shrink, and re-weight with every click in real time.
-4. **Live Telemetry Dashboard**: Real-time meters for *Feed Diversity (Shannon Entropy)*, *Filter Bubble Risk*, *Personalization Level*, and *Algorithm Confidence*.
-5. **The Final Reveal**: A side-by-side diagnostic comparing your intended baseline feed against the algorithmic echo chamber.
-6. **Break My Bubble**: Disruption mechanic that re-injects high entropy and restores cognitive diversity.
+**https://github.com/pranesh-2601/inside-the-feed**
 
 ---
 
-## 🚀 Quick Start (Zero Dependencies)
+## Hackathon Track
 
-This project is completely self-contained with no external APIs, build tools, or frameworks required.
-
-### Run Locally:
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/pranesh-2601/inside-the-feed.git
-   ```
-2. Open the folder and double-click `index.html` in any modern web browser.
+- **Challenge:** Visualizing the Invisible
+- **Track:** Website — Interactive Visualization / Simulation
+- **Invisible phenomenon:** How social media algorithms influence what people see and gradually shape their choices
 
 ---
 
-## 🧠 Algorithmic Mathematical Model
+## The Idea
 
-- **Recommendation Amplification**:
-  $$P_i = \frac{W_i^\gamma}{\sum_j W_j^\gamma} \quad (\gamma = 1.35)$$
-- **Feed Diversity (Normalized Shannon Entropy)**:
-  $$H = -\sum_{i=1}^{k} P_i \log_k(P_i)$$
-- **Filter Bubble Risk Classification**:
-  - $P_{\max} < 0.35 \rightarrow$ **LOW**
-  - $0.35 \le P_{\max} < 0.55 \rightarrow$ **MODERATE**
-  - $0.55 \le P_{\max} < 0.70 \rightarrow$ **HIGH**
-  - $P_{\max} \ge 0.70 \rightarrow$ **ECHO CHAMBER**
+Recommendation systems learn from tiny actions such as likes, shares, and skips. Those actions look harmless individually, but repeated signals can gradually narrow a feed and reduce exposure to other topics.
 
----
+Inside The Feed turns that invisible process into a visible, interactive experiment.
 
-## ⌨️ Keyboard Shortcuts
-
-- `[L]` — **Like** (+2 topic affinity)
-- `[S]` — **Share** (+3 viral affinity)
-- `[K]` — **Skip** (-1 dampening)
+1. Select **3 initial interests** from Technology, Environment, Fitness, Travel, Entertainment, and Finance.
+2. Use the simulated feed normally with **Like**, **Share**, and **Skip**.
+3. Watch hidden interest weights and recommendation probabilities change in real time.
+4. Turn on **X-RAY** to reveal why a post reached you, which signals are strongest, and which topics are losing visibility.
+5. Observe **Feed Diversity**, **Filter Bubble Risk**, **Personalization**, and **Algorithm Confidence** evolve during the session.
+6. Reach the final reveal to compare your starting interests with the feed the algorithm learned.
+7. Use **Break My Bubble** to deliberately restore diversity.
 
 ---
 
-## 🛠️ Built With
+## What Makes It Different
 
-- **HTML5 & CSS3**: Glassmorphism, CSS grid & flexbox, custom variables, responsive layout.
-- **Vanilla JavaScript (ES6+)**: Custom recommendation engine, event bus, and state management.
-- **HTML5 Canvas**: Background data particle system & neural topology node visualizer.
-- **Web Audio API**: Real-time synthesized interaction chimes, heartbeat pulses, and bubble breakout harmonics.
+### X-RAY Mode
+A normal feed shows only the content. X-RAY mode exposes the hidden recommendation layer behind the current post, including the strongest learned interests and low-visibility topics.
+
+### Real-Time Feedback Loop
+Every interaction immediately changes the internal scoring model and influences what can appear next.
+
+### Filter-Bubble Visualization
+The experience shows how repeated engagement can make one preference dominate while other interests quietly disappear from the feed.
+
+### Interactive Recovery
+**Break My Bubble** demonstrates that recommendation systems can also be designed to re-introduce diversity instead of only maximizing reinforcement.
 
 ---
 
-## 📄 License
+## Interaction Model
 
-MIT License — Feel free to use, modify, and distribute!
+| Action | Effect on topic affinity |
+| --- | ---: |
+| Like | `+2.0` |
+| Share | `+3.5` |
+| Skip | `-1.2` |
+
+Recommendation probability is calculated from the current topic weights using an amplification exponent:
+
+```text
+P(i) = W(i)^1.35 / sum(W(j)^1.35)
+```
+
+Feed diversity is estimated using normalized Shannon entropy over the recommendation probability distribution.
+
+> The project is an educational simulation of recommendation feedback loops. It is not intended to reproduce the proprietary ranking system of any specific social media platform.
+
+---
+
+## Demo Flow
+
+For a quick judge demo:
+
+1. Open the live site and enter the experiment.
+2. Pick 3 interests.
+3. Repeatedly Like or Share one topic.
+4. Turn **X-RAY ON** and show how the hidden signals change.
+5. Continue interacting until the feed enters the high-bias / echo-chamber stage.
+6. Open the final report.
+7. Press **Break My Bubble** to restore diversity.
+
+Keyboard shortcuts are also available:
+
+- `L` — Like
+- `S` — Share
+- `K` — Skip
+
+---
+
+## Tech Stack
+
+- **HTML5**
+- **CSS3**
+- **Vanilla JavaScript (ES6+)**
+- **HTML5 Canvas** for the algorithm / neural visualization
+- **Web Audio API** for interaction feedback
+- **Vercel** for deployment
+
+The project has **no framework, build step, backend, database, or external API dependency**.
+
+---
+
+## Run Locally
+
+Because the final interface loads the simulation inside a same-origin frame, run the folder through a small local web server instead of opening the file directly.
+
+```bash
+git clone https://github.com/pranesh-2601/inside-the-feed.git
+cd inside-the-feed
+python -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/enhanced.html
+```
+
+---
+
+## Project Structure
+
+```text
+inside-the-feed/
+├── index.html         # Core recommendation simulation
+├── enhanced.html      # Final presentation wrapper
+├── xray-theme.css     # Final dark X-RAY interface
+├── xray-theme.js      # X-RAY mode + presentation behavior
+├── favicon.svg
+├── vercel.json        # Production route configuration
+└── README.md
+```
+
+---
+
+## Submission Links
+
+- **Live Website:** https://inside-the-feed.vercel.app/
+- **GitHub Repository:** https://github.com/pranesh-2601/inside-the-feed
+
+---
+
+## License
+
+MIT License
