@@ -5,10 +5,20 @@
 
   let currentDoc = null;
   let observers = [];
+  let revealed = false;
 
   function cleanup() {
     observers.forEach(o => o.disconnect());
     observers = [];
+  }
+
+  function revealFrame() {
+    if (revealed) return;
+    revealed = true;
+    frame.classList.add('theme-ready');
+    requestAnimationFrame(() => {
+      if (boot) boot.classList.add('hidden');
+    });
   }
 
   function parsePct(text) {
@@ -17,12 +27,23 @@
   }
 
   function injectTheme(d) {
-    if (d.getElementById('xray-theme-css')) return;
-    const link = d.createElement('link');
+    let link = d.getElementById('xray-theme-css');
+    if (link) {
+      if (link.sheet) revealFrame();
+      else link.addEventListener('load', revealFrame, { once: true });
+      return;
+    }
+
+    link = d.createElement('link');
     link.id = 'xray-theme-css';
     link.rel = 'stylesheet';
-    link.href = './xray-theme.css?v=5';
+    link.href = './xray-theme.css?v=6';
+    link.addEventListener('load', revealFrame, { once: true });
+    link.addEventListener('error', () => setTimeout(revealFrame, 250), { once: true });
     d.head.appendChild(link);
+
+    // Safety fallback: never leave the loader stuck if a browser misses the load event.
+    setTimeout(revealFrame, 1400);
   }
 
   function rewriteCopy(d) {
@@ -196,17 +217,14 @@
         setTimeout(() => syncStage(d), 360);
       }, true);
     });
-
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (boot) boot.classList.add('hidden');
-    }));
   }
 
   frame.addEventListener('load', () => {
-    try { setTimeout(() => bind(frame.contentDocument), 60); } catch (_) { if (boot) boot.classList.add('hidden'); }
+    try { setTimeout(() => bind(frame.contentDocument), 40); }
+    catch (_) { revealFrame(); }
   });
 
   try {
-    if (frame.contentDocument?.readyState === 'complete') setTimeout(() => bind(frame.contentDocument), 60);
-  } catch (_) {}
+    if (frame.contentDocument?.readyState === 'complete') setTimeout(() => bind(frame.contentDocument), 40);
+  } catch (_) { revealFrame(); }
 })();
